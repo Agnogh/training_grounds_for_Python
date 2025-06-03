@@ -19,8 +19,8 @@ monster_characters = [
 def display_characters():
     print("\nAvailable warriors of light: ")
     for key, value in player_character.items():
-        shield = value.get('shield', 0)
-        total_armor = value.get('armor', 0)
+        # shield = value.get('shield', 0)
+        # total_armor = value.get('armor', 0)
         print(
             f"{key}: {value['class']} - HP: {value['hp']}, \n"
             f"Armor: {value.get('armor', 0)}, Damage: {value['damage']}")
