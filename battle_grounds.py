@@ -46,6 +46,13 @@ def random_enemy():
     return random.choice(monster_characters).copy()
 
 
+""" function for combat """
+
+
+def battle(player, enemy):
+    print(f"\nBattle begins! {player['class']} vs {enemy['class']}!")
+
+
 """ trying out the main function """
 
 
@@ -54,3 +61,4 @@ while True:
     player = select_character()
     enemy = random_enemy()
     print(f"\nRandom enemy selected: {enemy['class']}")
+    battle(player, enemy)
