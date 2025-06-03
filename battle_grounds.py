@@ -30,7 +30,7 @@ def select_character():
         choice = input("\nEnter number (1) to select character or 0 to view: ")
         if choice == "0":
             continue
-        elif choice in [str(i) for i in range(1, 2)]:
+        elif choice in [str(i) for i in range(1, 3)]:
             char_id = int(choice)
             return player_character[char_id].copy()
         else:
