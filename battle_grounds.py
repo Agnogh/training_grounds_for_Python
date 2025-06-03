@@ -6,6 +6,8 @@ import random
 player_character = {
     1: {"class": "Guard", "hp": 5, "armor": 1, "damage": (0, 5)},
     2: {"class": "Rogue", "hp": 4, "armor": 0, "damage": (1, 2)},
+    3: {"class": "Knight", "hp": 6, "armor": 2, "shield": 1, "damage": (2, 5)},
+    4: {"class": "Paladin", "hp": 6, "armor": 2, "damage": (3, 4)},
 }
 
 """ creating enemy characters"""
