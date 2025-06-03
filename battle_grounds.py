@@ -1,5 +1,7 @@
 """ this should be low version of turn based gaem with elements of RPG"""
 
+import random
+
 """ creating player character"""
 player_character = {
     1: {"class": "Guard", "hp": 5, "armor": 1, "damage": (0, 5)},
@@ -33,3 +35,20 @@ def select_character():
             return player_character[char_id].copy()
         else:
             print("Invalid input. Try again.")
+
+
+""" function for randomly selecting enemy mosters"""
+
+
+def random_enemy():
+    return random.choice(monster_characters).copy()
+
+
+""" trying out the main function """
+
+
+while True:
+    print("\n--- SELECT YOUR WARRIOR OF LIGT---")
+    player = select_character()
+    enemy = random_enemy()
+    print(f"\nRandom enemy selected: {enemy['class']}")
