@@ -2,22 +2,25 @@
 
 """ creating player character"""
 player_character = {
-    1: {"class": "Guard", "hp": 5, "armour": 1, "damage": (0, 5)},
+    1: {"class": "Guard", "hp": 5, "armor": 1, "damage": (0, 5)},
     2: {"class": "Rogue", "hp": 4, "armor": 0, "damage": (1, 2)},
 }
 
 """ creating enemy characters"""
 monster_characters = {
-    1: {"class": "Vampire", "hp": 6, "armour": 0, "damage": (2, 4)},
+    1: {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4)},
 }
+
 
 def display_characters():
     print("\nAvailable warriors of light: ")
     for key, value in player_character.items():
         shield = value.get('shield', 0)
-        total_armor = value.get('armour', 0)
-    print(f"{key}: {value['class']} - HP: {value['hp']}, \n"
-          f"Armor: {value.get('armor', 0)}, Damage: {value['damage']}")
+        total_armor = value.get('armor', 0)
+        print(
+            f"{key}: {value['class']} - HP: {value['hp']}, \n"
+            f"Armor: {value.get('armor', 0)}, Damage: {value['damage']}")
+
 
 def select_character():
     while True:
