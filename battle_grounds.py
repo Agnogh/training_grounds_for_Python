@@ -9,11 +9,11 @@ player_character = {
 }
 
 """ creating enemy characters"""
-monster_characters = {
-    1: {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4)},
-    2: {"class": "Skeleton Warrior", "hp": 6, "armor": 2, "damage": (4, 5)},
-    3: {"class": "Wraith", "hp": 5, "armor": 0, "damage": (3, 4)},
-}
+monster_characters = [
+    {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4)},
+    {"class": "Skeleton Warrior", "hp": 6, "armor": 2, "damage": (4, 5)},
+    {"class": "Wraith", "hp": 5, "armor": 0, "damage": (3, 4)},
+]
 
 
 def display_characters():
