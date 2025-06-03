@@ -3,18 +3,30 @@
 """ creating player character"""
 player_character = {
     1: {"class": "Guard", "hp": 5, "armour": 1, "damage": (0, 5)},
+    2: {"class": "Rogue", "hp": 4, "armor": 0, "damage": (1, 2)},
 }
 
 """ creating enemy characters"""
-monster_charcters = {
+monster_characters = {
     1: {"class": "Vampire", "hp": 6, "armour": 0, "damage": (2, 4)},
 }
 
 def display_characters():
     print("\nAvailable warriors of light: ")
-    for key, value in characters.items():
+    for key, value in player_character.items():
         shield = value.get('shield', 0)
-        armour = value.get('armour', 0)
+        total_armor = value.get('armour', 0)
+    print(f"{key}: {value['class']} - HP: {value['hp']}, \n"
+          f"Armor: {value.get('armor', 0)}, Damage: {value['damage']}")
 
-
-print(f"{key}: {value['class']} - HP: {value['hp']}, Armor: {value.get('armor', 0)}, Damage: {value['damage']}")
+def select_character():
+    while True:
+        display_characters()
+        choice = input("\nEnter number (1) to select character or 0 to view: ")
+        if choice == "0":
+            continue
+        elif choice in [str(i) for i in range(1, 2)]:
+            char_id = int(choice)
+            return player_character[char_id].copy()
+        else:
+            print("Invalid input. Try again.")
