@@ -29,7 +29,7 @@ def display_characters():
 def select_character():
     while True:
         display_characters()
-        choice = input("\nEnter number (1) to select character or 0 to view: ")
+        choice = input("\nEnter (1-X) to select character or 0 to view: ")
         if choice == "0":
             continue
         elif choice in [str(i) for i in range(1, 3)]:
@@ -46,11 +46,21 @@ def random_enemy():
     return random.choice(monster_characters).copy()
 
 
-""" function for combat """
+""" function for calculated damange"""
+
+
+def calculate_damage(damage_range, multiplier=1):
+    return random.randint(*damage_range) * multiplier
+
+
+""" function for combat announacement """
 
 
 def battle(player, enemy):
     print(f"\nBattle begins! {player['class']} vs {enemy['class']}!")
+
+
+""" PLazer character attack phase """
 
 
 """ trying out the main function """
@@ -62,3 +72,6 @@ while True:
     enemy = random_enemy()
     print(f"\nRandom enemy selected: {enemy['class']}")
     battle(player, enemy)
+
+    base_damage = calculate_damage(player["damage"])
+    total_damage = base_damage
