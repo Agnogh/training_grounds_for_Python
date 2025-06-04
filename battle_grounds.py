@@ -130,13 +130,18 @@ def battle(player, enemy):
         if player.get("special") == "heal":
             player["hp"] += 1
             print(f"\nPaladin healed 1HP with his\n"
-                  "ability 'lay on hands' and is now on\n"
-                   " {player['hp']} Current HP incread by 1")
+                  "ability 'lay on hands' and is now on\n "
+                  "{player['hp']} Current HP incread by 1")
         if enemy.get("special") == "lifesteal":
             enemy["hp"] += 1
             print(f"\nVampire recovered 1HP with its\n"
                   "ability 'life steal' and is now on\n"
                   "{enemy['hp']} Current HP increaed by 1")
+        if enemy.get("special") == "reflect":
+            reflected = max(total_damage - player_armor, 0)
+            player["hp"] -= reflected
+            print(f"\nWraith returned {reflected} damage. {player['class']}"
+                  "is now on {player['hp']} HP = Current HP - {reflected}")
 
         """ trying out the main function """
 
