@@ -8,6 +8,8 @@ player_character = {
     2: {"class": "Rogue", "hp": 4, "armor": 0, "damage": (1, 2)},
     3: {"class": "Knight", "hp": 6, "armor": 2, "shield": 1, "damage": (2, 5)},
     4: {"class": "Paladin", "hp": 6, "armor": 2, "damage": (3, 4)},
+    5: {"class": "Prisoner", "hp": 7, "armor": 0, "damage": (0, 5)},
+    6: {"class": "Mage", "hp": 5, "armor": 0, "damage": (4, 6)},
 }
 
 """ creating enemy characters"""
