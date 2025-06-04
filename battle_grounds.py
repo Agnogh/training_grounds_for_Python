@@ -3,6 +3,7 @@
 import random
 
 """ creating player character"""
+
 player_character = {
     1: {"class": "Guard", "hp": 5, "armor": 1, "damage": (0, 5),
         "special": None},
@@ -19,6 +20,7 @@ player_character = {
 }
 
 """ creating enemy characters"""
+
 monster_characters = [
     {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4),
      "special": "lifesteal"},
@@ -34,25 +36,26 @@ monster_characters = [
 def display_characters():
     print("\nAvailable warriors of light: ")
     for key, value in player_character.items():
-        # spec = value.get('special', 'None')
-        # shield = value.get('shield', 0)
-        # total_armor = value.get('armor', 0) + shield
+        spec = value.get('special', 'None')
+        shield = value.get('shield', 0)
+        total_armor = value.get('armor', 0) + shield
         print(
             f"{key}: {value['class']} - HP: {value['hp']}, \n"
-            f"Armor: {value.get('armor', 0)}, Damage: {value['damage']}")
+            f"Armor: {value.get('armor', 0)}, Damage: {value['damage']},\n"
+            "Special: {spec}")
 
 
 def select_character():
     while True:
         display_characters()
-        choice = input("\nEnter (1-X) to select character or 0 to view: ")
+        choice = input("\nEnter (1-7) to select character or 0 to view: ")
         if choice == "0":
             continue
-        elif choice in [str(i) for i in range(1, 5)]:
+        elif choice in [str(i) for i in range(1, 7)]:
             char_id = int(choice)
             return player_character[char_id].copy()
         else:
-            print("Invalid input. Try again.")
+            print("Invalid input. Pick between offered selection.")
 
 
 """ function for randomly selecting enemy mosters"""
@@ -82,13 +85,48 @@ def battle(player, enemy):
         if action == "run":
             print("You ran and live to fight another day!")
             return
+        """ Player character attack phase """
+        base_damage = calculate_damage(player["damage"])
+        special_text = ""
+        total_damage = base_damage
+        """ defining special atatcks """
+        if player.get("special") == "double_damage":
+            total_damage = base_damage * 2
+        elif player.get("special") == "poison":  # "poison" also "2x DMG"
+            poison_damage = 1  # Applies after innital attack
+            total_damage = base_damage * 2
+        elif player.get("special") == "fire":
+            fire_damage = 1  # Ignores armor
+        else:
+            poison_damage = fire_damage = 0
 
+        armor_block = enemy.get("armor", 0)
+        effective_damage = max(total_damage - armor_block, 0)
+        """ fire and poison damage after 1st attack"""
+        enemy["hp"] -= effective_damage
 
-""" PLazer character attack phase """
+        if player.get("special") == "fire":
+            enemy["hp"] -= fire_damage
+            special_text += "\nMage burned the enemy! 1 extra damage."
+        if player.get("special") == "poison":
+            enemy["hp"] -= poison_damage
+            special_text += "\nRogue stung! 1 extra damage."
 
-""" Enemy Attack Phase """
+        """ Enemy Attack Phase """
 
-""" trying out the main function """
+        enemy_damage = calculate_damage(enemy["damage"])
+        player_armor = player.get("armor", 0) + player.get("shield", 0)
+        damage_received = max(enemy_damage - player_armor, 0)
+        player["hp"] -= damage_received
+
+        print(f"\nYou dealt {total_damage} damage. Enemy armor"
+              "absorbed {armor_block}.\n"
+              "Effective damage: {effective_damage}")
+        print(f"{enemy['class']} struck back with {enemy_damage} damage.\n"
+              "Your armor absorbed {player_armor}.\n"
+              "You received: {damage_received} damage")
+
+        """ trying out the main function """
 
 
 while True:
@@ -98,11 +136,3 @@ while True:
 
     print(f"\nRandomly selected enemz is : {enemy['class']}")
     battle(player, enemy)
-
-    base_damage = calculate_damage(player["damage"])
-    total_damage = base_damage
-
-    enemy_damage = calculate_damage(enemy["damage"])
-    player_armor = player.get("armor", 0) + player.get("shield", 0)
-    damage_received = max(enemy_damage - player_armor, 0)
-    player["hp"] -= damage_received
