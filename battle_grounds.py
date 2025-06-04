@@ -15,6 +15,7 @@ monster_characters = [
     {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4)},
     {"class": "Skeleton Warrior", "hp": 6, "armor": 2, "damage": (4, 5)},
     {"class": "Wraith", "hp": 5, "armor": 0, "damage": (3, 4)},
+    {"class": "Werewolf", "hp": 8, "armor": 1, "damage": (5, 6)},
 ]
 
 
@@ -34,7 +35,7 @@ def select_character():
         choice = input("\nEnter (1-X) to select character or 0 to view: ")
         if choice == "0":
             continue
-        elif choice in [str(i) for i in range(1, 3)]:
+        elif choice in [str(i) for i in range(1, 5)]:
             char_id = int(choice)
             return player_character[char_id].copy()
         else:
