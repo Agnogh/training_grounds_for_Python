@@ -77,6 +77,8 @@ while True:
     enemy = random_enemy()
     print(f"\nRandom enemy selected: {enemy['class']}")
     battle(player, enemy)
+    print(f"\nRandomly selected enemz is : {enemy['class']}")
+    battle(player, enemy)
 
     base_damage = calculate_damage(player["damage"])
     total_damage = base_damage
