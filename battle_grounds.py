@@ -120,23 +120,25 @@ def battle(player, enemy):
         player["hp"] -= damage_received
 
         print(f"\nYou dealt {total_damage} damage. Enemy armor"
-              "absorbed {armor_block}.\n"
-              "Effective damage: {effective_damage}")
+              f"absorbed {armor_block}.\n"
+              f"Effective damage: {effective_damage}")
         print(f"{enemy['class']} struck back with {enemy_damage} damage.\n"
-              "Your armor absorbed {player_armor}.\n"
-              "You received: {damage_received} damage")
+              f"Your armor absorbed {player_armor}.\n"
+              f"You received: {damage_received} damage")
 
         # --- Special Effects (non combat) ---
         if player.get("special") == "heal":
             player["hp"] += 1
-            print(f"Paladin healed 1HP with his\n"
-                  "ability 'lay on hands' and is now on\n "
-                  "{player['hp']} Current HP incread by 1")
+            print(
+                  f"\nPaladin healed 1HP with his\n"
+                  f"ability 'lay on hands' and is now on\n "
+                  f"{player['hp']} Current HP incread by 1")
         if enemy.get("special") == "lifesteal":
             enemy["hp"] += 1
-            print(f"Vampire recovered 1HP with its\n"
-                  "ability 'life steal' and is now on\n"
-                  "{enemy['hp']} Current HP increaed by 1")
+            print(
+                  f"\nVampire recovered 1HP with its\n"
+                  f"ability 'life steal' and is now on\n"
+                  f"{enemy['hp']} Current HP increaed by 1")
         if enemy.get("special") == "reflect":
             reflected = max(total_damage - player_armor, 0)
             player["hp"] -= reflected
@@ -166,3 +168,8 @@ while True:
 
     print(f"\nRandomly selected enemz is : {enemy['class']}")
     battle(player, enemy)
+
+    play_again = input("Do you want to fight the evil again? (yes): ").lower()
+    if play_again != "yes":
+        print("Thanks for playing!")
+        break
