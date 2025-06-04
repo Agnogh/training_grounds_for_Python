@@ -64,6 +64,14 @@ def calculate_damage(damage_range, multiplier=1):
 def battle(player, enemy):
     print(f"\nBattle begins! {player['class']} vs {enemy['class']}!")
 
+    while player["hp"] > 0 and enemy["hp"] > 0:
+        action = input("\nType 'run' to flee, otheriwise type anything like 'die undead beast'\n"
+                       " for your hero to keep attacking and battle continuing: ").lower()
+        if action == "run":
+            print("You ran and live to fight another day!")
+            return
+
+
 
 """ PLazer character attack phase """
 
