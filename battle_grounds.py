@@ -58,23 +58,24 @@ def calculate_damage(damage_range, multiplier=1):
     return random.randint(*damage_range) * multiplier
 
 
-""" function for combat announacement """
+""" function for combat announacement + disengagge mid combat + description """
 
 
 def battle(player, enemy):
     print(f"\nBattle begins! {player['class']} vs {enemy['class']}!")
 
     while player["hp"] > 0 and enemy["hp"] > 0:
-        action = input("\nType 'run' to flee, otheriwise type anything like 'die undead beast'\n"
-                       " for your hero to keep attacking and battle continuing: ").lower()
+        action = input("\nType 'run' to flee, otheriwise type anything like\n"
+                       "'die undead beast' for your hero to keep attacking \n"
+                       "and battle continuing: ").lower()
         if action == "run":
             print("You ran and live to fight another day!")
             return
 
 
-
 """ PLazer character attack phase """
 
+""" Enemy Attack Phase """
 
 """ trying out the main function """
 
@@ -83,10 +84,14 @@ while True:
     print("\n--- SELECT YOUR WARRIOR OF LIGT---")
     player = select_character()
     enemy = random_enemy()
-    print(f"\nRandom enemy selected: {enemy['class']}")
-    battle(player, enemy)
+
     print(f"\nRandomly selected enemz is : {enemy['class']}")
     battle(player, enemy)
 
     base_damage = calculate_damage(player["damage"])
     total_damage = base_damage
+
+    enemy_damage = calculate_damage(enemy["damage"])
+    player_armor = player.get("armor", 0) + player.get("shield", 0)
+    damage_received = max(enemy_damage - player_armor, 0)
+    player["hp"] -= damage_received
