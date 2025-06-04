@@ -122,7 +122,7 @@ def battle(player, enemy):
         player["hp"] -= damage_received
 
         print(f"\nYou dealt {total_damage} damage. Enemy armor"
-              f"absorbed {armor_block}.\n"
+              f" absorbed {armor_block}.\n"
               f"Effective damage: {effective_damage}")
         print(f"{enemy['class']} struck back with {enemy_damage} damage.\n"
               f"Your armor absorbed {player_armor}.\n"
