@@ -125,16 +125,16 @@ def battle(player, enemy):
         print(f"{enemy['class']} struck back with {enemy_damage} damage.\n"
               "Your armor absorbed {player_armor}.\n"
               "You received: {damage_received} damage")
-        
+
         # --- Special Effects (non combat) ---
         if player.get("special") == "heal":
             player["hp"] += 1
-            print(f"\nPaladin healed 1HP with his\n"
+            print(f"Paladin healed 1HP with his\n"
                   "ability 'lay on hands' and is now on\n "
                   "{player['hp']} Current HP incread by 1")
         if enemy.get("special") == "lifesteal":
             enemy["hp"] += 1
-            print(f"\nVampire recovered 1HP with its\n"
+            print(f"Vampire recovered 1HP with its\n"
                   "ability 'life steal' and is now on\n"
                   "{enemy['hp']} Current HP increaed by 1")
         if enemy.get("special") == "reflect":
@@ -142,6 +142,19 @@ def battle(player, enemy):
             player["hp"] -= reflected
             print(f"\nWraith returned {reflected} damage. {player['class']}"
                   "is now on {player['hp']} HP = Current HP - {reflected}")
+
+        # Show current HP after round
+            print(f"\n[STATUS] {player['class']} HP: {player['hp']},"
+                  "{enemy['class']} HP: {enemy['hp']}")
+        print(special_text)
+
+        # --- End of Battle ---
+        if player["hp"] <= 0 and enemy["hp"] <= 0:
+            print("It's a draw!")
+        elif player["hp"] <= 0:
+            print("You failed and forces of darknes prevailed!")
+        else:
+            print("You send undead beast back to darknes!")
 
         """ trying out the main function """
 
