@@ -41,8 +41,10 @@ def display_characters():
         total_armor = value.get('armor', 0) + shield
         print(
             f"{key}: {value['class']} - HP: {value['hp']}, \n"
-            f"Armor: {value.get('armor', 0)}, Damage: {value['damage']},\n"
-            "Special: {spec}")
+            f"Armor: {value.get('armor', 0)} (+{shield}"
+            f"shield = {total_armor}),"
+            f"Damage: {value['damage']},"
+            f"Special: {spec}")
 
 
 def select_character():
@@ -143,11 +145,11 @@ def battle(player, enemy):
             reflected = max(total_damage - player_armor, 0)
             player["hp"] -= reflected
             print(f"\nWraith returned {reflected} damage. {player['class']}"
-                  "is now on {player['hp']} HP = Current HP - {reflected}")
+                  f"is now on {player['hp']} HP = Current HP - {reflected}")
 
         # Show current HP after round
             print(f"\n[STATUS] {player['class']} HP: {player['hp']},"
-                  "{enemy['class']} HP: {enemy['hp']}")
+                  f"{enemy['class']} HP: {enemy['hp']}")
         print(special_text)
 
         # --- End of Battle ---
