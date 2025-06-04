@@ -4,28 +4,39 @@ import random
 
 """ creating player character"""
 player_character = {
-    1: {"class": "Guard", "hp": 5, "armor": 1, "damage": (0, 5)},
-    2: {"class": "Rogue", "hp": 4, "armor": 0, "damage": (1, 2)},
-    3: {"class": "Knight", "hp": 6, "armor": 2, "shield": 1, "damage": (2, 5)},
-    4: {"class": "Paladin", "hp": 6, "armor": 2, "damage": (3, 4)},
-    5: {"class": "Prisoner", "hp": 7, "armor": 0, "damage": (0, 5)},
-    6: {"class": "Mage", "hp": 5, "armor": 0, "damage": (4, 6)},
+    1: {"class": "Guard", "hp": 5, "armor": 1, "damage": (0, 5),
+        "special": None},
+    2: {"class": "Rogue", "hp": 4, "armor": 0, "damage": (1, 2),
+        "special": "poison"},
+    3: {"class": "Knight", "hp": 6, "armor": 2, "shield": 1, "damage": (2, 5),
+        "special": None},
+    4: {"class": "Paladin", "hp": 6, "armor": 2, "damage": (3, 4),
+        "special": "heal"},
+    5: {"class": "Prisoner", "hp": 7, "armor": 0, "damage": (0, 5),
+        "special": "double_damage"},
+    6: {"class": "Mage", "hp": 5, "armor": 0, "damage": (4, 6),
+        "special": "fire"},
 }
 
 """ creating enemy characters"""
 monster_characters = [
-    {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4)},
-    {"class": "Skeleton Warrior", "hp": 6, "armor": 2, "damage": (4, 5)},
-    {"class": "Wraith", "hp": 5, "armor": 0, "damage": (3, 4)},
-    {"class": "Werewolf", "hp": 8, "armor": 1, "damage": (5, 6)},
+    {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4),
+     "special": "lifesteal"},
+    {"class": "Skeleton Warrior", "hp": 6, "armor": 2, "damage": (4, 5),
+     "special": None},
+    {"class": "Wraith", "hp": 5, "armor": 0, "damage": (3, 4),
+     "special": "reflect"},
+    {"class": "Werewolf", "hp": 8, "armor": 1, "damage": (5, 6),
+     "special": None},
 ]
 
 
 def display_characters():
     print("\nAvailable warriors of light: ")
     for key, value in player_character.items():
+        # spec = value.get('special', 'None')
         # shield = value.get('shield', 0)
-        # total_armor = value.get('armor', 0)
+        # total_armor = value.get('armor', 0) + shield
         print(
             f"{key}: {value['class']} - HP: {value['hp']}, \n"
             f"Armor: {value.get('armor', 0)}, Damage: {value['damage']}")
