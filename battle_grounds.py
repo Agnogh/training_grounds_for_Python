@@ -166,11 +166,11 @@ def battle(player, enemy):
 
 
 while True:
-    print("\n--- SELECT YOUR WARRIOR OF LIGT---")
+    print("\n--- SELECT YOUR WARRIOR OF LIGHT---")
     player = select_character()
     enemy = random_enemy()
 
-    print(f"\nRandomly selected enemz is : {enemy['class']}")
+    print(f"\nRandomly selected enemy is : {enemy['class']}")
     battle(player, enemy)
 
     play_again = input("Do you want to fight the evil again? (yes): ").lower()
