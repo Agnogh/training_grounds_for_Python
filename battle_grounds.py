@@ -148,8 +148,8 @@ def battle(player, enemy):
                   f"is now on {player['hp']} HP = Current HP - {reflected}")
 
         # Show current HP after round
-            print(f"\n[STATUS] {player['class']} HP: {player['hp']},"
-                  f"{enemy['class']} HP: {enemy['hp']}")
+        print(f"\n[STATUS] {player['class']} HP: {player['hp']},"
+              f"{enemy['class']} HP: {enemy['hp']}")
         print(special_text)
 
         # --- End of Battle ---
