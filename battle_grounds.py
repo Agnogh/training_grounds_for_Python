@@ -109,10 +109,10 @@ def battle(player, enemy):
 
         if player.get("special") == "fire":
             enemy["hp"] -= fire_damage
-            special_text += "\nMage burned the enemy! 1 extra damage."
+            special_text += "\nMage burned the enemy! 1 extra fire damage."
         if player.get("special") == "Poison":
             enemy["hp"] -= poison_damage
-            special_text += "\nRogue stung! 1 extra damage."
+            special_text += "\nRogue stung! 1 extra poison damage."
 
         """ Enemy Attack Phase """
 
