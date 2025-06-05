@@ -121,7 +121,7 @@ def battle(player, enemy):
         damage_received = max(enemy_damage - player_armor, 0)
         player["hp"] -= damage_received
 
-        print(f"\nYou dealt {total_damage} damage. Enemy armor"
+        print(f"\nYou dealt {total_damage} damage.\nEnemy armor"
               f" absorbed {armor_block}.\n"
               f"Effective damage: {effective_damage}")
         print(f"{enemy['class']} struck back with {enemy_damage} damage.\n"
@@ -148,7 +148,7 @@ def battle(player, enemy):
                   f"is now on {player['hp']} HP = Current HP - {reflected}")
 
         # Show current HP after round
-        print(f"\n[STATUS] {player['class']} HP: {player['hp']},"
+        print(f"\n\n[STATUS]\n{player['class']} HP: {player['hp']} - "
               f"{enemy['class']} HP: {enemy['hp']}")
         print(special_text)
 
