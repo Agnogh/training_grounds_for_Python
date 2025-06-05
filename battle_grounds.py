@@ -8,7 +8,7 @@ player_character = {
     1: {"class": "Guard", "hp": 5, "armor": 1, "damage": (0, 5),
         "special": None},
     2: {"class": "Rogue", "hp": 4, "armor": 0, "damage": (1, 2),
-        "special": "poison"},
+        "special": "Poison"},
     3: {"class": "Knight", "hp": 6, "armor": 2, "shield": 1, "damage": (2, 5),
         "special": None},
     4: {"class": "Paladin", "hp": 6, "armor": 2, "damage": (3, 4),
@@ -94,7 +94,7 @@ def battle(player, enemy):
         """ defining special atatcks """
         if player.get("special") == "Double damage":
             total_damage = base_damage * 2
-        elif player.get("special") == "poison":  # "poison" also "2x DMG"
+        elif player.get("special") == "Poison":  # "poison" also "2x DMG"
             poison_damage = 1  # Applies after innital attack
             total_damage = base_damage * 2
         elif player.get("special") == "fire":
@@ -110,7 +110,7 @@ def battle(player, enemy):
         if player.get("special") == "fire":
             enemy["hp"] -= fire_damage
             special_text += "\nMage burned the enemy! 1 extra damage."
-        if player.get("special") == "poison":
+        if player.get("special") == "Poison":
             enemy["hp"] -= poison_damage
             special_text += "\nRogue stung! 1 extra damage."
 
