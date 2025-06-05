@@ -23,11 +23,11 @@ player_character = {
 
 monster_characters = [
     {"class": "Vampire", "hp": 6, "armor": 0, "damage": (2, 4),
-     "special": "lifesteal"},
+     "special": "Lifesteal"},
     {"class": "Skeleton Warrior", "hp": 6, "armor": 2, "damage": (4, 5),
      "special": None},
     {"class": "Wraith", "hp": 5, "armor": 0, "damage": (3, 4),
-     "special": "reflect"},
+     "special": "Reflect"},
     {"class": "Werewolf", "hp": 8, "armor": 1, "damage": (5, 6),
      "special": None},
 ]
@@ -135,13 +135,13 @@ def battle(player, enemy):
                   f"\nPaladin healed 1HP with his\n"
                   f"ability 'lay on hands' and is now on\n "
                   f"{player['hp']} Current HP incread by 1")
-        if enemy.get("special") == "lifesteal":
+        if enemy.get("special") == "Lifesteal":
             enemy["hp"] += 1
             print(
                   f"\nVampire recovered 1HP with its\n"
                   f"ability 'life steal' and is now on\n"
                   f"{enemy['hp']} Current HP increaed by 1")
-        if enemy.get("special") == "reflect":
+        if enemy.get("special") == "Reflect":
             reflected = max(total_damage - player_armor, 0)
             player["hp"] -= reflected
             print(f"\nWraith returned {reflected} damage. {player['class']}"
