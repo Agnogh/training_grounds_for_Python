@@ -14,7 +14,7 @@ player_character = {
     4: {"class": "Paladin", "hp": 6, "armor": 2, "damage": (3, 4),
         "special": "heal"},
     5: {"class": "Prisoner", "hp": 7, "armor": 0, "damage": (0, 5),
-        "special": "double_damage"},
+        "special": "Double damage"},
     6: {"class": "Mage", "hp": 5, "armor": 0, "damage": (4, 6),
         "special": "fire"},
 }
@@ -92,7 +92,7 @@ def battle(player, enemy):
         special_text = ""
         total_damage = base_damage
         """ defining special atatcks """
-        if player.get("special") == "double_damage":
+        if player.get("special") == "Double damage":
             total_damage = base_damage * 2
         elif player.get("special") == "poison":  # "poison" also "2x DMG"
             poison_damage = 1  # Applies after innital attack
