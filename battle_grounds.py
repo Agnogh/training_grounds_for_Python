@@ -157,8 +157,10 @@ def battle(player, enemy):
             print("It's a draw!")
         elif player["hp"] <= 0:
             print("You failed and forces of darknes prevailed!")
-        else:
+        elif enemy["hp"] <= 0:
             print("You send undead beast back to darknes!")
+        else:
+            print("Battle rages between good and evil!")
 
         """ trying out the main function """
 
