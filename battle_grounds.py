@@ -41,8 +41,8 @@ def display_characters():
         total_armor = value.get('armor', 0) + shield
         print(
             f"{key}: {value['class']} - HP: {value['hp']}, \n"
-            f"Armor: {value.get('armor', 0)} (+{shield}"
-            f"shield = {total_armor}),"
+            f"Armor: {value.get('armor', 0)} (+ {shield}"
+            f" shield = {total_armor}),"
             f"Damage: {value['damage']},"
             f"Special: {spec}")
 
