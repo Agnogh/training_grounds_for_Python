@@ -12,11 +12,11 @@ player_character = {
     3: {"class": "Knight", "hp": 6, "armor": 2, "shield": 1, "damage": (2, 5),
         "special": None},
     4: {"class": "Paladin", "hp": 6, "armor": 2, "damage": (3, 4),
-        "special": "heal"},
+        "special": "Heal"},
     5: {"class": "Prisoner", "hp": 7, "armor": 0, "damage": (0, 5),
         "special": "Double damage"},
     6: {"class": "Mage", "hp": 5, "armor": 0, "damage": (4, 6),
-        "special": "fire"},
+        "special": "Fire"},
 }
 
 """ creating enemy characters"""
@@ -97,7 +97,7 @@ def battle(player, enemy):
         elif player.get("special") == "Poison":  # "poison" also "2x DMG"
             poison_damage = 1  # Applies after innital attack
             total_damage = base_damage * 2
-        elif player.get("special") == "fire":
+        elif player.get("special") == "Fire":
             fire_damage = 1  # Ignores armor
         else:
             poison_damage = fire_damage = 0
@@ -107,7 +107,7 @@ def battle(player, enemy):
         """ fire and poison damage after 1st attack"""
         enemy["hp"] -= effective_damage
 
-        if player.get("special") == "fire":
+        if player.get("special") == "Fire":
             enemy["hp"] -= fire_damage
             special_text += "\nMage burned the enemy! 1 extra fire damage."
         if player.get("special") == "Poison":
@@ -129,7 +129,7 @@ def battle(player, enemy):
               f"You received: {damage_received} damage")
 
         # --- Special Effects (non combat) ---
-        if player.get("special") == "heal":
+        if player.get("special") == "Heal":
             player["hp"] += 1
             print(
                   f"\nPaladin healed 1HP with his\n"
