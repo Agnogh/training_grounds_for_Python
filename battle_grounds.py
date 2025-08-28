@@ -8,7 +8,9 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive"
     ]
 
-CREDS = Credentials.from_service_account_file('pythonbattlefield-34d11d65bfdc.json')
+CREDS = Credentials.from_service_account_file(
+    'pythonbattlefield-34d11d65bfdc.json'
+    )
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('python_battlefield')
