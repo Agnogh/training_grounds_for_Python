@@ -9,7 +9,7 @@ SCOPE = [
     ]
 
 CREDS = Credentials.from_service_account_file(
-    'pythonbattlefield-34d11d65bfdc.json'
+    'pythonbattlefield-2a7d07648ac1.json'
     )
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
