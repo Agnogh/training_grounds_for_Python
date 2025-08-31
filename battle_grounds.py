@@ -6,7 +6,7 @@
 # - Monster (Monsters! B3 class, C3 Armour, D3 Damage, E3 HP)
 #
 # Flow:
-#   1) "Welcome to battle" message 
+#   1) "Welcome to battle" message
 #   2) List heroes (only "Royal Guard" ATM) -> auto-select
 #   3) List weapons ("Spear" only this one) -> auto-select
 #   4) List monsters (only "Skeleton" mosnter) -> auto-select
@@ -14,6 +14,36 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
+
+from dataclasses import dataclass
+
+# --- Data classes ---
+
+
+@dataclass
+class Hero_Character:
+    champion_of_light: str
+    armour: int
+    hit_points: int
+
+
+@dataclass
+class Weapon:
+    type: str
+    damage_min: int
+    damage_max: int
+    raw_weapon_damage: str
+
+
+@dataclass
+class Monster_Character:
+    chamption_od_darknes: str
+    armour: int
+    damage_min: int
+    damage_max: int
+    hit_points: int
+    raw_moster_damage: str
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
