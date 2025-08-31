@@ -1,3 +1,17 @@
+
+# battle_setup.py plan
+# 1. Reads "python_battlefiled.xlsx" and shows:
+# - Hero (Heroes! A2 name-Not at this point), B2 class, C2 Armour, D2 HP)
+# - Weapon (Weapons! A2 type, B2 Damage)
+# - Monster (Monsters! B3 class, C3 Armour, D3 Damage, E3 HP)
+#
+# Flow:
+#   1) "Welcome to battle" message 
+#   2) List heroes (only "Royal Guard" ATM) -> auto-select
+#   3) List weapons ("Spear" only this one) -> auto-select
+#   4) List monsters (only "Skeleton" mosnter) -> auto-select
+#   5) Display stat blocks for all
+
 import gspread
 from google.oauth2.service_account import Credentials
 
