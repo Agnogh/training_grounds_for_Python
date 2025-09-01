@@ -14,7 +14,7 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
-
+import re
 from dataclasses import dataclass
 
 # --- Data classes ---
@@ -66,6 +66,189 @@ SHEET_ID = (
     "PyD9UdntkLI"
 )
 
+sh = CLIENT.open_by_key(SHEET_ID)
+print("Opened:", sh.title)
+print("Tabs:", [ws.title for ws in sh.worksheets()])
+
+
+# Weapons and armour range and values
+# =========================
+def parse_damage_range(text: str) -> tuple[int, int]:
+    """
+    Accepts formats like '0-7', '0–7' (en-dash), '07', or a single number '7'.
+    Returns (low, high).
+    """
+    if text is None:
+        raise ValueError("Damage cell is empty")
+
+    s = str(text).strip()
+
+    # 'min-max' with hyphen or en-dash
+    m = re.match(r"^\s*(\d+)\s*[-–]\s*(\d+)\s*$", s)
+    if m:
+        low, high = int(m.group(1)), int(m.group(2))
+        if low > high:
+            low, high = high, low
+        return low, high
+
+    # Compact '07' meaning 0..7
+    if s.isdigit() and len(s) == 2:
+        return int(s[0]), int(s[1])
+
+    # Single number -> 0..number
+    if s.isdigit():
+        return 0, int(s)
+
+    raise ValueError(f"Unrecognized damage format: {s!r}")
+
+
+def stat_block(title: str, lines: list[str]) -> str:
+    width = max(len(title), *(len(line) for line in lines), 20)
+    border = "-" * (width + 4)
+    content = [border, f"| {title.ljust(width)} |", border]
+    for line in lines:
+        content.append(f"| {line.ljust(width)} |")
+    content.append(border)
+    return "\n".join(content)
+
+
+def auto_pick_single(label: str, options: list[str]) -> str:
+    print(f"\n{label}:")
+    for i, opt in enumerate(options, start=1):
+        print(f"  {i}) {opt}")
+    choice = options[0]  # only one option -> auto-select
+    print(f"Selected: {choice}")
+    return choice
+
+
+def as_range_or_none(val):
+    """Return (low, high) as val is a ranges
+    ('2-4', '2–4', '24' compact), else None."""
+    try:
+        return parse_damage_range(val)
+    except Exception:
+        return None
+
+
+def coerce_int_strict(val, label):
+    """Turn a cell into an int. Accepts '99' or '99.0'.
+    Rejects ranges like '2-4'."""
+    s = str(val).strip()
+    if re.fullmatch(r"\d+(\.0+)?", s):
+        return int(float(s))
+    raise ValueError(f"{label} must be a single number, got {val!r}")
+
+
+# things (heroes, vilins, weapons) to
+#  load from Google Sheets
+# =========================
+def load_from_gsheets():
+    # I am using Key ID rather than name (CLIENT.open)
+    sh = CLIENT.open_by_key(SHEET_ID)
+
+    # Heroes tab: B2 name, C2 armour, D2 HP
+    heroes_ws = sh.worksheet("Heroes")
+    hero_class = heroes_ws.acell("B2").value
+    hero_armour = int(heroes_ws.acell("C2").value)
+    hero_hp = int(heroes_ws.acell("D2").value)
+
+    # Weapons tab: A2 name, B2 damage
+    weapons_ws = sh.worksheet("Weapons")
+    weapon_name = weapons_ws.acell("A2").value
+    weapon_damage_raw = weapons_ws.acell("B2").value
+    w_low, w_high = parse_damage_range(weapon_damage_raw)
+
+    # Monsters tab: B3 class, C3 armour, D3 is HP
+    # E3 is damage (range)
+    monsters_ws = sh.worksheet("Monsters")
+    monster_class = monsters_ws.acell("B3").value
+    monster_armour = int(monsters_ws.acell("C3").value)
+
+    monster_hp = coerce_int_strict(monsters_ws.acell("D3").value,
+                                   "Monsters!D3 (HP)")
+    monster_damage_raw = str(monsters_ws.acell("E3").value)
+    m_low, m_high = parse_damage_range(monster_damage_raw)
+
+    hero = Hero_Character(
+        champion_of_light=str(hero_class),
+        armour=hero_armour,
+        hit_points=hero_hp,
+    )
+    weapon = Weapon(
+        type=str(weapon_name),
+        damage_min=w_low,
+        damage_max=w_high,
+        raw_weapon_damage=str(weapon_damage_raw),
+    )
+    monster = Monster_Character(
+        chamption_od_darknes=str(monster_class),
+        armour=monster_armour,
+        damage_min=m_low,
+        damage_max=m_high,
+        hit_points=monster_hp,
+        raw_moster_damage=monster_damage_raw,
+        )
+    return hero, weapon, monster
+
+
+# Main game flow
+# =========================
+def main():
+    print("Welcome to battl")
+
+    hero, weapon, monster = load_from_gsheets()
+
+    # 1) Hero list (one option to choose from)
+    picked_hero = auto_pick_single("Choose your Hero of light",
+                                   [hero.champion_of_light])
+    print()
+    print("choosing your chanpion")
+    print()
+    print(stat_block(
+        f"Hero: {picked_hero}",
+        [
+            f"Armour: {hero.armour}",
+            f"Hit Points: {hero.hit_points}",
+        ],
+    ))
+
+    # 2) Weapon list (one option)
+    picked_weapon = auto_pick_single("Choose your Weapon", [weapon.type])
+    print()
+    print("--. arming the hero of light ---")
+    print()
+    print(stat_block(
+        f"Weapon: {picked_weapon}",
+        [
+            f"Damage: {weapon.raw_weapon_damage} (parsed {weapon.damage_min}-"
+            f"{weapon.damage_max})",
+        ],
+    ))
+
+    # 3) Monster list (one option)
+    picked_monster = auto_pick_single("Choose Warriror fo darknest",
+                                      [monster.chamption_od_darknes])
+    print()
+    print("---Summonig the mosnter---")
+    print()
+    print(stat_block(
+        f"Monster: {picked_monster}",
+        [
+            f"Armour: {monster.armour}",
+            f"Hit Points: {monster.hit_points}",
+            f"Damage: {monster.raw_moster_damage} (parsed {monster.damage_min}"
+            f"-{monster.damage_max})",
+        ],
+    ))
+
+
+if __name__ == "__main__":
+    main()
+
+
+""" don't need these things for confirmation
+if something works
+
 # Trying ot open the spreadsheet using the key
 sh = CLIENT.open_by_key(SHEET_ID)
 print("Tabs:", [ws.title for ws in sh.worksheets()])
@@ -75,6 +258,7 @@ heroes_ws = sh.worksheet("Heroes")
 cell_value = heroes_ws.acell("A2").value
 print("Value in Heroes!A2:", cell_value)
 
+"""
 
 """
  "" creating player character ""
