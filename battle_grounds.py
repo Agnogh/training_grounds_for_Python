@@ -16,6 +16,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import re
 from dataclasses import dataclass
+import random
 
 # --- Data classes ---
 
@@ -75,8 +76,8 @@ print("Tabs:", [ws.title for ws in sh.worksheets()])
 # =========================
 def parse_damage_range(text: str) -> tuple[int, int]:
     """
-    Accepts formats like '0-7', '0–7' (en-dash), '07', or a single number '7'.
-    Returns (low, high).
+    Accepts formats like '0-7', '0–7' (en-dash), '07',
+    or a single number '7'. Returns (low, high).
     """
     if text is None:
         raise ValueError("Damage cell is empty")
@@ -139,9 +140,69 @@ def coerce_int_strict(val, label):
     raise ValueError(f"{label} must be a single number, got {val!r}")
 
 
+def roll_damage(min_d: int, max_d: int) -> int:
+    """Inclusive roll between min_d and max_d."""
+    return random.randint(min_d, max_d)
+
+
+def resolve_simultaneous_round(hero, weapon, monster,
+                               hero_hp: int, monster_hp: int):
+    """
+    Both sides roll damage using start-of-round values.
+    Armour reduces incoming damage. HP never goes below 0.
+    Returns (new_hero_hp, new_monster_hp, report_dict)
+    not stored in spreadsheet a tthis time
+    """
+    # 1) Roll raw damage for BOTH
+    # hero -> monster
+    hero_raw = roll_damage(weapon.damage_min, weapon.damage_max)
+    # monster -> hero
+    monster_raw = roll_damage(monster.damage_min, monster.damage_max)
+
+    # 2) Armour mitigation
+    dmg_to_monster = max(0, hero_raw - monster.armour)
+    dmg_to_hero = max(0, monster_raw - hero.armour)
+
+    # 3) Apply simultaneously (use start-of-round HP)
+    new_monster_hp = max(0, monster_hp - dmg_to_monster)
+    new_hero_hp = max(0, hero_hp - dmg_to_hero)
+
+    # 4) Outcome
+    if new_hero_hp <= 0 and new_monster_hp <= 0:
+        outcome = "double_ko"
+    elif new_monster_hp <= 0:
+        outcome = "monster_defeated"
+    elif new_hero_hp <= 0:
+        outcome = "hero_defeated"
+    else:
+        outcome = "continue"
+
+    # 5) For pretty printing/logging
+    lines = [
+        f"{hero.champion_of_light} rolls {hero_raw}"
+        f"with {weapon.type} ({weapon.raw_weapon_damage})"
+        f" → {monster.chamption_od_darknes}"
+        f"takes {dmg_to_monster} (armour {monster.armour})",
+        f"{monster.chamption_od_darknes}"
+        f"rolls {monster_raw} ({monster.raw_moster_damage})"
+        f" → {hero.champion_of_light}"
+        f"takes {dmg_to_hero} (armour {hero.armour})",
+        f"{hero.champion_of_light} HP: {hero_hp} → {new_hero_hp}",
+        f"{monster.chamption_od_darknes} HP: {monster_hp} → {new_monster_hp}",
+    ]
+
+    report = {
+        "hero_raw": hero_raw, "hero_net": dmg_to_monster,
+        "monster_raw": monster_raw, "monster_net": dmg_to_hero,
+        "outcome": outcome, "lines": lines,
+    }
+    return new_hero_hp, new_monster_hp, report
+
 # things (heroes, vilins, weapons) to
 #  load from Google Sheets
 # =========================
+
+
 def load_from_gsheets():
     # I am using Key ID rather than name (CLIENT.open)
     sh = CLIENT.open_by_key(SHEET_ID)
@@ -240,6 +301,31 @@ def main():
             f"-{monster.damage_max})",
         ],
     ))
+
+# --- One simultaneous round ---
+    hero_hp = hero.hit_points
+    monster_hp = monster.hit_points
+
+    hero_hp, monster_hp, rep = resolve_simultaneous_round(
+        hero, weapon, monster, hero_hp, monster_hp
+    )
+
+    print()
+    print(stat_block("Round 1 — Simultaneous", rep["lines"]))
+
+    # Outcome banner
+    if rep["outcome"] == "double_ko":
+        print(stat_block("Round 1 — Result",
+                         ["Double KO! Both fall together."]))
+    elif rep["outcome"] == "monster_defeated":
+        print(stat_block("Round 1 — Result",
+                         [f"{monster.chamption_od_darknes} is defeated!"]))
+    elif rep["outcome"] == "hero_defeated":
+        print(stat_block("Round 1 — Result",
+                         [f"{hero.champion_of_light} is defeated!"]))
+    else:
+        print(stat_block("Round 1 — Result",
+                         ["Both fighters still in the fight."]))
 
 
 if __name__ == "__main__":
