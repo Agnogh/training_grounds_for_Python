@@ -18,6 +18,76 @@ import re
 from dataclasses import dataclass
 import random
 
+
+def roll_damage(min_d: int, max_d: int) -> int:
+    return random.randint(min_d, max_d)  # inclusive
+
+
+def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
+                               monster_hp: int):
+    """
+    Both attack using start-of-round stats.
+    Quick Hands -> hero makes 2 strikes (armour applies per eaqch strike).
+    """
+    # strikes-per-side
+    # defining ability for double strike (if active, then 2,
+    # otherwise only 1 attack)
+    hero_strikes = 2 if "quick hands" in (hero.special or "").lower() else 1
+    # can extend later if monster has specials ability 2 x attack
+    monster_strikes = 1
+
+    # roll raw damage per strike
+    hero_raws = [roll_damage(weapon.damage_min, weapon.damage_max)
+                 for _ in range(hero_strikes)]
+    monster_raws = [roll_damage(monster.damage_min, monster.damage_max)
+                    for _ in range(monster_strikes)]
+
+    # defining armour per strike
+    hero_nets = [max(0, r - monster.armour) for r in hero_raws]
+    monster_nets = [max(0, r - hero.armour) for r in monster_raws]
+
+    # apply simultaneously damage as each char attacks at same time
+    dmg_to_monster = sum(hero_nets)
+    dmg_to_hero = sum(monster_nets)
+    # defining "remaining" HP after blows exchange
+    new_monster_hp = max(0, monster_hp - dmg_to_monster)
+    new_hero_hp = max(0, hero_hp - dmg_to_hero)
+
+    # outcome tag - both killed, hero killed, monster killed
+    if new_hero_hp <= 0 and new_monster_hp <= 0:
+        outcome = "double_ko"
+    elif new_monster_hp <= 0:
+        outcome = "monster_defeated"
+    elif new_hero_hp <= 0:
+        outcome = "hero_defeated"
+    else:
+        outcome = "continue"
+
+    # lines for pretty print
+    lines = []
+    for i, (raw, net) in enumerate(zip(hero_raws, hero_nets), start=1):
+        label = f"strike {i}" if hero_strikes > 1 else "strike"
+        lines.append(
+            f"{hero.champion_of_light} {label}: {raw} "
+            f"with {weapon.type} ({weapon.raw_weapon_damage}) "
+            f"→ {monster.chamption_od_darknes} takes {net}"
+            f"(armour {monster.armour})"
+        )
+    for i, (raw, net) in enumerate(zip(monster_raws, monster_nets), start=1):
+        label = f"strike {i}" if monster_strikes > 1 else "strike"
+        lines.append(
+            f"{monster.chamption_od_darknes} {label}: {raw} "
+            f"({monster.raw_moster_damage}) → {hero.champion_of_light} "
+            f"takes {net} (armour {hero.armour})"
+        )
+    lines += [
+        f"{hero.champion_of_light} HP: {hero_hp} → {new_hero_hp}",
+        f"{monster.chamption_od_darknes} HP: {monster_hp} → {new_monster_hp}",
+    ]
+
+    return new_hero_hp, new_monster_hp, {"outcome": outcome, "lines": lines}
+
+
 # --- Data classes ---
 
 
@@ -26,6 +96,10 @@ class Hero_Character:
     champion_of_light: str
     armour: int
     hit_points: int
+    # (adding "Quick Hands" ability for Rogue)
+    special: str = ""
+    # (adding description for special ablity)
+    special_desc: str = ""
 
 
 @dataclass
@@ -122,6 +196,36 @@ def auto_pick_single(label: str, options: list[str]) -> str:
     return choice
 
 
+def choose_from_list(label: str, options: list[str]) -> str:
+    print(f"\n{label}:")
+    for i, opt in enumerate(options, start=1):
+        print(f"  {i}) {opt}")
+    while True:
+        raw = input("Pick a number (default 1): ").strip()
+        if raw == "":
+            return options[0]
+        if raw.isdigit():
+            idx = int(raw)
+            if 1 <= idx <= len(options):
+                return options[idx - 1]
+        print("Invalid choice. Try again.")
+
+
+def read_hero_row(ws, row: int) -> Hero_Character:
+    hero_class = ws.acell(f"B{row}").value
+    hero_armour = int(ws.acell(f"C{row}").value)
+    hero_hp = int(ws.acell(f"D{row}").value)
+    hero_special = (ws.acell(f"E{row}").value or "").strip()
+    hero_special_desc = (ws.acell(f"F{row}").value or "").strip()
+    return Hero_Character(
+        champion_of_light=str(hero_class),
+        armour=hero_armour,
+        hit_points=hero_hp,
+        special=hero_special,
+        special_desc=hero_special_desc,
+    )
+
+
 def as_range_or_none(val):
     """Return (low, high) as val is a ranges
     ('2-4', '2–4', '24' compact), else None."""
@@ -140,64 +244,6 @@ def coerce_int_strict(val, label):
     raise ValueError(f"{label} must be a single number, got {val!r}")
 
 
-def roll_damage(min_d: int, max_d: int) -> int:
-    """Inclusive roll between min_d and max_d."""
-    return random.randint(min_d, max_d)
-
-
-def resolve_simultaneous_round(hero, weapon, monster,
-                               hero_hp: int, monster_hp: int):
-    """
-    Both sides roll damage using start-of-round values.
-    Armour reduces incoming damage. HP never goes below 0.
-    Returns (new_hero_hp, new_monster_hp, report_dict)
-    not stored in spreadsheet a tthis time
-    """
-    # 1) Roll raw damage for BOTH
-    # hero -> monster
-    hero_raw = roll_damage(weapon.damage_min, weapon.damage_max)
-    # monster -> hero
-    monster_raw = roll_damage(monster.damage_min, monster.damage_max)
-
-    # 2) Armour mitigation
-    dmg_to_monster = max(0, hero_raw - monster.armour)
-    dmg_to_hero = max(0, monster_raw - hero.armour)
-
-    # 3) Apply simultaneously (use start-of-round HP)
-    new_monster_hp = max(0, monster_hp - dmg_to_monster)
-    new_hero_hp = max(0, hero_hp - dmg_to_hero)
-
-    # 4) Outcome
-    if new_hero_hp <= 0 and new_monster_hp <= 0:
-        outcome = "double_ko"
-    elif new_monster_hp <= 0:
-        outcome = "monster_defeated"
-    elif new_hero_hp <= 0:
-        outcome = "hero_defeated"
-    else:
-        outcome = "continue"
-
-    # 5) For pretty printing/logging
-    lines = [
-        f"{hero.champion_of_light} rolls {hero_raw}"
-        f"with {weapon.type} ({weapon.raw_weapon_damage})"
-        f" → {monster.chamption_od_darknes}"
-        f"takes {dmg_to_monster} (armour {monster.armour})",
-        f"{monster.chamption_od_darknes}"
-        f"rolls {monster_raw} ({monster.raw_moster_damage})"
-        f" → {hero.champion_of_light}"
-        f"takes {dmg_to_hero} (armour {hero.armour})",
-        f"{hero.champion_of_light} HP: {hero_hp} → {new_hero_hp}",
-        f"{monster.chamption_od_darknes} HP: {monster_hp} → {new_monster_hp}",
-    ]
-
-    report = {
-        "hero_raw": hero_raw, "hero_net": dmg_to_monster,
-        "monster_raw": monster_raw, "monster_net": dmg_to_hero,
-        "outcome": outcome, "lines": lines,
-    }
-    return new_hero_hp, new_monster_hp, report
-
 # things (heroes, vilins, weapons) to
 #  load from Google Sheets
 # =========================
@@ -209,15 +255,20 @@ def load_from_gsheets():
 
     # Heroes tab: B2 name, C2 armour, D2 HP
     heroes_ws = sh.worksheet("Heroes")
-    hero_class = heroes_ws.acell("B2").value
-    hero_armour = int(heroes_ws.acell("C2").value)
-    hero_hp = int(heroes_ws.acell("D2").value)
+    heroes = [read_hero_row(heroes_ws, 2), read_hero_row(heroes_ws, 3)]
 
     # Weapons tab: A2 name, B2 damage
     weapons_ws = sh.worksheet("Weapons")
     weapon_name = weapons_ws.acell("A2").value
     weapon_damage_raw = weapons_ws.acell("B2").value
     w_low, w_high = parse_damage_range(weapon_damage_raw)
+    # adding type despite having one weapon as more will follow
+    weapon = Weapon(
+        type=str(weapon_name),
+        damage_min=w_low,
+        damage_max=w_high,
+        raw_weapon_damage=str(weapon_damage_raw),
+    )
 
     # Monsters tab: B3 class, C3 armour, D3 is HP
     # E3 is damage (range)
@@ -229,18 +280,7 @@ def load_from_gsheets():
                                    "Monsters!D3 (HP)")
     monster_damage_raw = str(monsters_ws.acell("E3").value)
     m_low, m_high = parse_damage_range(monster_damage_raw)
-
-    hero = Hero_Character(
-        champion_of_light=str(hero_class),
-        armour=hero_armour,
-        hit_points=hero_hp,
-    )
-    weapon = Weapon(
-        type=str(weapon_name),
-        damage_min=w_low,
-        damage_max=w_high,
-        raw_weapon_damage=str(weapon_damage_raw),
-    )
+    # for future monesters that will be added
     monster = Monster_Character(
         chamption_od_darknes=str(monster_class),
         armour=monster_armour,
@@ -248,8 +288,9 @@ def load_from_gsheets():
         damage_max=m_high,
         hit_points=monster_hp,
         raw_moster_damage=monster_damage_raw,
-        )
-    return hero, weapon, monster
+    )
+
+    return heroes, weapon, monster
 
 
 # Main game flow
@@ -257,8 +298,41 @@ def load_from_gsheets():
 def main():
     print("Welcome to battl")
 
-    hero, weapon, monster = load_from_gsheets()
+    heroes, weapon, monster = load_from_gsheets()
 
+
+# choose hero now that we have aditional hero in play
+    hero_names = [h.champion_of_light for h in heroes]
+    picked_name = choose_from_list("Choose your Hero", hero_names)
+    hero = next(h for h in heroes if h.champion_of_light == picked_name)
+
+    # show chosen hero stats
+    print()
+    print(stat_block(
+        f"Hero: {hero.champion_of_light}",
+        [
+            f"Armour: {hero.armour}",
+            f"Hit Points: {hero.hit_points}",
+            f"Special: {hero.special or '—'}",
+        ],
+    ))
+
+    print(stat_block(
+        f"Weapon: {weapon.type}",
+        [f"Damage: {weapon.raw_weapon_damage} (parsed"
+         f"{weapon.damage_min}-{weapon.damage_max})"],
+    ))
+    print(stat_block(
+        f"Monster: {monster.chamption_od_darknes}",
+        [
+            f"Armour: {monster.armour}",
+            f"Hit Points: {monster.hit_points}",
+            f"Damage: {monster.raw_moster_damage} (parsed"
+            f"{monster.damage_min}-{monster.damage_max})",
+        ],
+    ))
+
+    """ Keeping this for now in case 2 heroes fails
     # 1) Hero list (one option to choose from)
     picked_hero = auto_pick_single("Choose your Hero of light",
                                    [hero.champion_of_light])
@@ -272,43 +346,29 @@ def main():
             f"Hit Points: {hero.hit_points}",
         ],
     ))
+    """
 
-    # 2) Weapon list (one option)
-    picked_weapon = auto_pick_single("Choose your Weapon", [weapon.type])
-    print()
-    print("--. arming the hero of light ---")
-    print()
-    print(stat_block(
-        f"Weapon: {picked_weapon}",
-        [
-            f"Damage: {weapon.raw_weapon_damage} (parsed {weapon.damage_min}-"
-            f"{weapon.damage_max})",
-        ],
-    ))
-
-    # 3) Monster list (one option)
-    picked_monster = auto_pick_single("Choose Warriror fo darknest",
-                                      [monster.chamption_od_darknes])
-    print()
-    print("---Summonig the mosnter---")
-    print()
-    print(stat_block(
-        f"Monster: {picked_monster}",
-        [
-            f"Armour: {monster.armour}",
-            f"Hit Points: {monster.hit_points}",
-            f"Damage: {monster.raw_moster_damage} (parsed {monster.damage_min}"
-            f"-{monster.damage_max})",
-        ],
-    ))
 
 # --- One simultaneous round ---
-    hero_hp = hero.hit_points
-    monster_hp = monster.hit_points
+    hero_hp, monster_hp, rep = resolve_simultaneous_round(hero, weapon,
+                                                          monster,
+                                                          hero.hit_points,
+                                                          monster.hit_points)
+    print()
+    print(stat_block("Round 1 — Simultaneous", rep["lines"]))
 
-    hero_hp, monster_hp, rep = resolve_simultaneous_round(
-        hero, weapon, monster, hero_hp, monster_hp
-    )
+# One time display
+    if rep["outcome"] == "double_ko":
+        print(stat_block("Round 1 — Result",
+                         ["Double KO! Both fall together."]))
+    elif rep["outcome"] == "monster_defeated":
+        print(stat_block("Round 1 — Result", [f"{monster.chamption_od_darknes}"
+                                              f"is defeated!"]))
+    elif rep["outcome"] == "hero_defeated":
+        print(stat_block("Round 1 — Result", [f"{hero.champion_of_light}"
+                                              f"is defeated!"]))
+    else:
+        print(stat_block("Round 1 — Result", ["Both fighters still stand."]))
 
     print()
     print(stat_block("Round 1 — Simultaneous", rep["lines"]))
