@@ -23,6 +23,16 @@ def roll_damage(min_d: int, max_d: int) -> int:
     return random.randint(min_d, max_d)  # inclusive
 
 
+def monster_special_for(monster) -> str:
+    """
+    this should wire Vampire -> 'drain_life'.
+    Later I might add mapping for tohers
+    (Skeleton->none, ghost_shield for Wraight, Zombies death grip..).
+    """
+    m = _norm(monster.chamption_od_darknes)  # e.g., "vampire"
+    return "drain_life" if m == "vampire" else "none"
+
+
 def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                monster_hp: int):
     """
