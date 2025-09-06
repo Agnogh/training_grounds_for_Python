@@ -364,12 +364,14 @@ def load_from_gsheets():
 
     # Monsters tab: rows 2–6 (Name in A is cosmetic)
     monsters_ws = sh.worksheet("Monsters")
-    monsters = [
-        read_monster_row(monsters_ws, 2),
-        read_monster_row(monsters_ws, 3),
-    ]
-    # skip blanks if a row is empty
-    monsters = [m for m in monsters if (m.chamption_od_darknes or "").strip()]
+    monsters = []
+    for r in range(2, 7):       # 2..6 inclusive
+        # skip blank rows (no class)
+        if not (monsters_ws.acell(f"B{r}").value or "").strip():
+            continue
+        monsters.append(read_monster_row(monsters_ws, r))
+
+    return heroes, weapon, monsters
 
     return heroes, weapon, monsters  # <-- plural that was trolling me
     # all this time!!
