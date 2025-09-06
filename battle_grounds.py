@@ -35,7 +35,11 @@ def monster_special_for(monster) -> str:
     (Skeleton->none, ghost_shield for Wraight, Zombies death grip..).
     """
     m = _norm(monster.chamption_od_darknes)  # e.g., "vampire"
-    return "drain_life" if m == "vampire" else "none"
+    if m == "vampire":      # for vapire ability
+        return "drain_life"
+    if m in ("wraight", "wraith"):      # I made typo so if i ever fix it
+        return "ghost_shield"
+    return "none"
 
 
 def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
