@@ -159,6 +159,18 @@ class Hero_Character:
 
 
 @dataclass
+class Monster_Character:
+    chamption_od_darknes: str   # B column
+    armour: int     # (Column C)
+    damage_min: int     # from E column
+    damage_max: int     # also from E column
+    hit_points: int  # Columnd D
+    raw_moster_damage: str
+    special: str = ""   # (cloumn F)
+    special_desc: str = ""  # (column G)
+
+
+@dataclass
 class Weapon:
     type: str
     damage_min: int
@@ -166,6 +178,9 @@ class Weapon:
     raw_weapon_damage: str
 
 
+"""
+don't need this but do not want to delete
+until I am sure new stuff works
 @dataclass
 class Monster_Character:
     chamption_od_darknes: str
@@ -175,6 +190,7 @@ class Monster_Character:
     hit_points: int
     raw_moster_damage: str
 
+"""
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -282,6 +298,26 @@ def read_hero_row(ws, row: int) -> Hero_Character:
     )
 
 
+def read_monster_row(ws, row: int) -> Monster_Character:
+    m_class = ws.acell(f"B{row}").value
+    m_armour = int(ws.acell(f"C{row}").value)
+    m_hp = int(ws.acell(f"D{row}").value)
+    m_raw = str(ws.acell(f"E{row}").value)
+    m_min, m_max = parse_damage_range(m_raw)
+    m_special = (ws.acell(f"F{row}").value or "").strip()
+    m_special_desc = (ws.acell(f"G{row}").value or "").strip()
+    return Monster_Character(
+        chamption_od_darknes=str(m_class),
+        armour=m_armour,
+        damage_min=m_min,
+        damage_max=m_min,
+        hit_points=m_hp,
+        raw_moster_damage=m_raw,
+        special=m_special,
+        special_desc=m_special_desc,
+    )
+
+
 def as_range_or_none(val):
     """Return (low, high) as val is a ranges
     ('2-4', '2–4', '24' compact), else None."""
@@ -326,6 +362,19 @@ def load_from_gsheets():
         raw_weapon_damage=str(weapon_damage_raw),
     )
 
+    # Monsters tab: rows 2–6 (Name in A is cosmetic)
+    monsters_ws = sh.worksheet("Monsters")
+    monsters = [
+        read_monster_row(monsters_ws, 2),
+        read_monster_row(monsters_ws, 3),
+    ]
+    # skip blanks if a row is empty
+    monsters = [m for m in monsters if (m.chamption_od_darknes or "").strip()]
+
+    return heroes, weapon, monsters  # <-- plural that was trolling me
+    # all this time!!
+
+    """     keeping this part in case adding new monster goes to hell
     # Monsters tab: B3 class, C3 armour, D3 is HP
     # E3 is damage (range)
     monsters_ws = sh.worksheet("Monsters")
@@ -347,20 +396,28 @@ def load_from_gsheets():
     )
 
     return heroes, weapon, monster
-
+"""
 
 # Main game flow
 # =========================
+
+
 def main():
     print("Welcome to battl")
 
-    heroes, weapon, monster = load_from_gsheets()
+    heroes, weapon, monsters = load_from_gsheets()
 
 
 # choose hero now that we have aditional hero in play
     hero_names = [h.champion_of_light for h in heroes]
     picked_name = choose_from_list("Choose your Hero", hero_names)
     hero = next(h for h in heroes if h.champion_of_light == picked_name)
+
+# choose monster (by class)
+    monster_names = [m.chamption_od_darknes for m in monsters]
+    picked_monster = choose_from_list("Choose your Opponent", monster_names)
+    monster = next(m for m in monsters if
+                   m.chamption_od_darknes == picked_monster)
 
     # show chosen hero stats
     print()
@@ -385,8 +442,16 @@ def main():
             f"Hit Points: {monster.hit_points}",
             f"Damage: {monster.raw_moster_damage} (parsed"
             f"{monster.damage_min}-{monster.damage_max})",
+            f"Special: {monster.special or '—'}",
         ],
     ))
+
+    # One round (to try Drain Life)
+    hero_hp, monster_hp, rep = resolve_simultaneous_round(
+        hero, weapon, monster, hero.hit_points, monster.hit_points
+    )
+    print()
+    print(stat_block("Round 1 — Simultaneous", rep["lines"]))
 
     """ Keeping this for now in case 2 heroes fails
     # 1) Hero list (one option to choose from)
