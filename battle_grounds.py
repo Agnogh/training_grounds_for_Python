@@ -23,6 +23,11 @@ def roll_damage(min_d: int, max_d: int) -> int:
     return random.randint(min_d, max_d)  # inclusive
 
 
+def _norm(s: str) -> str:
+    """Lowercase/trim convenience for matching text safely."""
+    return (s or "").strip().lower()
+
+
 def monster_special_for(monster) -> str:
     """
     this should wire Vampire -> 'drain_life'.
@@ -34,68 +39,109 @@ def monster_special_for(monster) -> str:
 
 
 def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
-                               monster_hp: int):
+                               monster_hp: int,
+                               allow_revive: bool = True):
     """
-    Both attack using start-of-round stats.
-    Quick Hands -> hero makes 2 strikes (armour applies per eaqch strike).
+    Still simultanous but adding vampire skill drain life:
+    - Vampire: 'Drain Life' -> if monster dealt damage to hero > 0
+      actual damage this round, heal vampire for +1 HP *after*
+      the strikes (can revive vampire if vampire ends up on 0hp
+      after combat round -allow_revive=True).
+
+    more specials ability later
     """
-    # strikes-per-side
-    # defining ability for double strike (if active, then 2,
-    # otherwise only 1 attack)
-    hero_strikes = 2 if "quick hands" in (hero.special or "").lower() else 1
-    # can extend later if monster has specials ability 2 x attack
+    special = monster_special_for(monster)   # 'drain_life' or 'none' (for now)
+
+    # ===== STRIKES (simultaneous) =====
+    # this is for spec.abiltiy quick hands (2 times attack)
+    hero_strikes = 2 if "quick hands" in _norm(hero.special) else 1
+    # for now I am nto planing to create monster that atatcks 2 times
     monster_strikes = 1
 
-    # roll raw damage per strike
-    hero_raws = [roll_damage(weapon.damage_min, weapon.damage_max)
-                 for _ in range(hero_strikes)]
-    monster_raws = [roll_damage(monster.damage_min, monster.damage_max)
-                    for _ in range(monster_strikes)]
+    # raw rolls (this is just damage dealt before armour deducts it)
+    hero_raw_damage = [roll_damage(weapon.damage_min,  weapon.damage_max)
+                       for _ in range(hero_strikes)]
+    monster_raw_damage = [roll_damage(monster.damage_min, monster.damage_max)
+                          for _ in range(monster_strikes)]
 
-    # defining armour per strike
-    hero_nets = [max(0, r - monster.armour) for r in hero_raws]
-    monster_nets = [max(0, r - hero.armour) for r in monster_raws]
+    # value of damange after armour is applied -apply armour per strike
+    hero_actual_damage = [max(0, r - monster.armour)
+                          for r in hero_raw_damage]   # hero -> monster
+    monster_actual_damage = [max(0, r - hero.armour)
+                             for r in monster_raw_damage]  # monster -> hero
 
-    # apply simultaneously damage as each char attacks at same time
-    dmg_to_monster = sum(hero_nets)
-    dmg_to_hero = sum(monster_nets)
-    # defining "remaining" HP after blows exchange
+    # actual damage done and assigning to variable dmg_to_monster/hero
+    dmg_to_monster = sum(hero_actual_damage)
+    dmg_to_hero = sum(monster_actual_damage)
+
+    # HP calculations HP - damange after armour absorbtion
     new_monster_hp = max(0, monster_hp - dmg_to_monster)
     new_hero_hp = max(0, hero_hp - dmg_to_hero)
 
-    # outcome tag - both killed, hero killed, monster killed
-    if new_hero_hp <= 0 and new_monster_hp <= 0:
-        outcome = "double_ko"
-    elif new_monster_hp <= 0:
-        outcome = "monster_defeated"
-    elif new_hero_hp <= 0:
-        outcome = "hero_defeated"
-    else:
-        outcome = "continue"
+    # ===== POST-ROUND (always runs, can revive if allowed) =====
+    specials_applied = []
+    # if special is equal to "drain life" and damage to hero is over 0
+    if special == "drain_life" and dmg_to_hero > 0:
+        if allow_revive or new_monster_hp > 0:
+            # add 1HP to var new_monster_hp
+            new_monster_hp += 1
+            specials_applied.append("Drain Life: monster +1 HP")
 
-    # lines for pretty print
+    # ===== pretty print lines =====
     lines = []
-    for i, (raw, net) in enumerate(zip(hero_raws, hero_nets), start=1):
+    for i, (raw, net) in enumerate(zip(hero_raw_damage,
+                                       hero_actual_damage), start=1):
         label = f"strike {i}" if hero_strikes > 1 else "strike"
         lines.append(
-            f"{hero.champion_of_light} {label}: {raw} "
-            f"with {weapon.type} ({weapon.raw_weapon_damage}) "
-            f"→ {monster.chamption_od_darknes} takes {net}"
-            f"(armour {monster.armour})"
+            f"{hero.champion_of_light} {label}: {raw} with"
+            f"{weapon.type} ({weapon.raw_weapon_damage}) "
+            f"→ {monster.chamption_od_darknes} takes"
+            f"{net} (armour {monster.armour})"
         )
-    for i, (raw, net) in enumerate(zip(monster_raws, monster_nets), start=1):
+    for i, (raw, net) in enumerate(zip(monster_raw_damage,
+                                       monster_actual_damage), start=1):
         label = f"strike {i}" if monster_strikes > 1 else "strike"
         lines.append(
-            f"{monster.chamption_od_darknes} {label}: {raw} "
-            f"({monster.raw_moster_damage}) → {hero.champion_of_light} "
-            f"takes {net} (armour {hero.armour})"
+            f"{monster.chamption_od_darknes} {label}:"
+            f"{raw} ({monster.raw_moster_damage}) "
+            f"→ {hero.champion_of_light} takes {net} (armour {hero.armour})"
         )
+
     lines += [
         f"{hero.champion_of_light} HP: {hero_hp} → {new_hero_hp}",
         f"{monster.chamption_od_darknes} HP: {monster_hp} → {new_monster_hp}",
     ]
 
-    return new_hero_hp, new_monster_hp, {"outcome": outcome, "lines": lines}
+    # show post-round effect (if any) + final HP after effects (+ or -)
+    for note in specials_applied:
+        lines.append(f"[Post-round] {note}")
+    if specials_applied:
+        lines += [
+            f"[After effects] {hero.champion_of_light} HP = {new_hero_hp}",
+            f"[After effects] {monster.chamption_od_darknes}"
+            f"HP = {new_monster_hp}",
+        ]
+
+    # final outcome after everything (battle rounds & effect of spec. ability)
+    if new_hero_hp <= 0 and new_monster_hp <= 0:
+        outcome = "double_ko"   # when both are 0 HP
+    elif new_monster_hp <= 0:
+        outcome = "monster_defeated"    # when monster HP is 0
+    elif new_hero_hp <= 0:
+        outcome = "hero_defeated"   # when hero HP is 0
+    else:
+        outcome = "continue"    # non of above and combat continues
+
+    report = {
+        "hero_raw_total":    sum(hero_raw_damage),
+        "hero_net_total":    dmg_to_monster,
+        "monster_raw_total": sum(monster_raw_damage),
+        "monster_net_total": dmg_to_hero,
+        "specials_applied":  specials_applied,
+        "outcome": outcome,
+        "lines": lines,
+    }
+    return new_hero_hp, new_monster_hp, report
 
 
 # --- Data classes ---
@@ -379,9 +425,6 @@ def main():
                                               f"is defeated!"]))
     else:
         print(stat_block("Round 1 — Result", ["Both fighters still stand."]))
-
-    print()
-    print(stat_block("Round 1 — Simultaneous", rep["lines"]))
 
     # Outcome banner
     if rep["outcome"] == "double_ko":
