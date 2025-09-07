@@ -225,8 +225,9 @@ CREDS = Credentials.from_service_account_file(
 CLIENT = gspread.authorize(CREDS.with_scopes(SCOPE))
 
 # Quick sanity: list spreadsheets this service account can see
-for f in CLIENT.list_spreadsheet_files():
-    print("Seen by service account ->", f.get("name"), f.get("id"))
+# I am still getting errors so commenting this part as well
+# for f in CLIENT.list_spreadsheet_files():
+#    print("Seen by service account ->", f.get("name"), f.get("id"))
 
 # this is to use the correct ID (with the hyphen after the 1
 # I was missing all this damn time)
@@ -235,9 +236,10 @@ SHEET_ID = (
     "PyD9UdntkLI"
 )
 
-sh = CLIENT.open_by_key(SHEET_ID)
-print("Opened:", sh.title)
-print("Tabs:", [ws.title for ws in sh.worksheets()])
+# still getting the errors so maybe commenting this will help
+# sh = CLIENT.open_by_key(SHEET_ID)
+# print("Opened:", sh.title)
+# print("Tabs:", [ws.title for ws in sh.worksheets()])
 
 
 # Weapons and armour range and values
@@ -340,6 +342,55 @@ def read_monster_row(ws, row: int) -> Monster_Character:
     )
 
 
+def read_heroes_block(ws) -> list[Hero_Character]:
+    # B..F = class, armour, hp, special, special_desc (rows 2..11)
+    block = ws.get("B2:F11")  # onw API now
+    heroes: list[Hero_Character] = []
+
+    for r_idx, row in enumerate(block, start=2):        # r_idx 2 to 11
+        row = (row + ["", "", "", "", ""])[:5]      # trmms to 5 el (B->F)
+        b, c, d, e, f = row
+        if not str(b or "").strip():        # skip blank class
+            continue
+        armour = coerce_int_strict(c, f"Heroes!C{r_idx}")
+        hp = coerce_int_strict(d, f"Heroes!D{r_idx}")
+        heroes.append(Hero_Character(
+            champion_of_light=str(b),
+            armour=armour,
+            hit_points=hp,
+            special=str(e or ""),
+            special_desc=str(f or ""),
+        ))
+    return heroes
+
+
+def read_monsters_block(ws) -> list[Monster_Character]:
+    # B to G = class, armour, hp, damage, special, special_desc (rows 2to 6)
+    block = ws.get("B2:G6")  # one API call now
+    monsters: list[Monster_Character] = []
+
+    for r_idx, row in enumerate(block, start=2):        # r_idx matches row num
+        row = (row + ["", "", "", "", "", ""])[:6]      # trimms at 6 elements
+        b, c, d, e, f, g = row
+        if not str(b or "").strip():        # skip blank class
+            continue
+        armour = coerce_int_strict(c, f"Monsters!C{r_idx}")
+        hp = coerce_int_strict(d, f"Monsters!D{r_idx}")
+        raw = str(e or "")
+        m_low, m_high = parse_damage_range(raw)
+        monsters.append(Monster_Character(
+            chamption_od_darknes=str(b),
+            armour=armour,
+            damage_min=m_low,
+            damage_max=m_high,
+            hit_points=hp,
+            raw_moster_damage=raw,
+            special=str(f or ""),
+            special_desc=str(g or ""),
+        ))
+    return monsters
+
+
 def as_range_or_none(val):
     """Return (low, high) as val is a ranges
     ('2-4', '2–4', '24' compact), else None."""
@@ -367,7 +418,36 @@ def load_from_gsheets():
     # I am using Key ID rather than name (CLIENT.open)
     sh = CLIENT.open_by_key(SHEET_ID)
 
-    #
+    heroes_ws = sh.worksheet("Heroes")
+    weapons_ws = sh.worksheet("Weapons")
+    monsters_ws = sh.worksheet("Monsters")
+
+    # HEROES (B2:F11) — one call to avoid erros due
+    # to frequesnt requests
+    # Quota exceeded for quota metric 'Read requests' and limit
+    # 'Read requests per minute per user' of service
+    # 'sheets.googleapis.com' for consumer 'project_number:317396774673'.
+    heroes = read_heroes_block(heroes_ws)
+
+    # WEAPON (still fine to read A2/B2 individually)
+    weapon_name = weapons_ws.acell("A2").value
+    weapon_damage_raw = weapons_ws.acell("B2").value
+    w_low, w_high = parse_damage_range(weapon_damage_raw)
+    weapon = Weapon(
+        type=str(weapon_name),
+        damage_min=w_low,
+        damage_max=w_high,
+        raw_weapon_damage=str(weapon_damage_raw),
+    )
+
+    # MONSTERS (B2:G6) — one call to avoid
+    # calling API a lot
+    monsters = read_monsters_block(monsters_ws)
+
+    return heroes, weapon, monsters
+
+
+"""
     # Heroes tab- all heroes rows 2–11
     heroes_ws = sh.worksheet("Heroes")
     heroes = []
@@ -376,6 +456,7 @@ def load_from_gsheets():
         if not cls:
             continue  # skip blank rows
         heroes.append(read_hero_row(heroes_ws, r))
+
 
     # Weapons tab: A2 name, B2 damage
     weapons_ws = sh.worksheet("Weapons")
@@ -389,8 +470,18 @@ def load_from_gsheets():
         damage_max=w_high,
         raw_weapon_damage=str(weapon_damage_raw),
     )
+"""
 
-    # Monsters tab: rows 2–6 (Name in A is cosmetic)
+# I need to drop this part as I am geting
+# File "C:\ Users\Zombie\Desktop vscode-projects
+# training_grounds_for_Python\.venv\Lib
+# site-packages\gspread\http_client.py",
+# line 236, in values_get r = self.request
+# ("get", url, params=params)
+
+
+"""
+    # Monsters tab: rows 2 to 6 (Name in A is cosmetic)
     monsters_ws = sh.worksheet("Monsters")
     monsters = []
     for r in range(2, 7):       # 2..6 inclusive
@@ -403,8 +494,10 @@ def load_from_gsheets():
 
     return heroes, weapon, monsters  # <-- plural that was trolling me
     # all this time!!
+"""
 
-    """     keeping this part in case adding new monster goes to hell
+"""
+    # keeping this part in case adding new monster goes to hell
     # Monsters tab: B3 class, C3 armour, D3 is HP
     # E3 is damage (range)
     monsters_ws = sh.worksheet("Monsters")
