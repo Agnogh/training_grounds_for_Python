@@ -69,8 +69,22 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                           for _ in range(monster_strikes)]
 
     # value of damange after armour is applied -apply armour per strike
-    hero_actual_damage = [max(0, r - monster.armour)
-                          for r in hero_raw_damage]   # hero -> monster
+    # + with Ghost Shield
+    hero_actual_damage = []
+    hero_cap_flags = []   # track which strikes got capped (cosmetics)
+
+    for r in hero_raw_damage:
+        # armour first as wraight has 1 armour
+        net = max(0, r - monster.armour)
+
+        # now Ghost Shield - cap 1 *per strike* after armour abosrbs dmg
+        capped = False
+        if special == "ghost_shield" and net > 1:
+            net = 1
+            capped = True
+
+        hero_actual_damage.append(net)
+        hero_cap_flags.append(capped)
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
 
