@@ -107,14 +107,18 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     # ===== pretty print lines =====
     lines = []
-    for i, (raw, net) in enumerate(zip(hero_raw_damage,
-                                       hero_actual_damage), start=1):
+    for i, (raw, net, capped) in enumerate(zip(
+        hero_raw_damage,
+        hero_actual_damage, hero_cap_flags),
+        start=1
+    ):
         label = f"strike {i}" if hero_strikes > 1 else "strike"
         lines.append(
             f"{hero.champion_of_light} {label}: {raw} with"
             f"{weapon.type} ({weapon.raw_weapon_damage}) "
             f"→ {monster.chamption_od_darknes} takes"
             f"{net} (armour {monster.armour})"
+            + (" (capped by Ghost Shield)" if capped else "")
         )
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
                                        monster_actual_damage), start=1):
