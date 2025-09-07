@@ -367,9 +367,15 @@ def load_from_gsheets():
     # I am using Key ID rather than name (CLIENT.open)
     sh = CLIENT.open_by_key(SHEET_ID)
 
-    # Heroes tab: B2 name, C2 armour, D2 HP
+    #
+    # Heroes tab- all heroes rows 2–11
     heroes_ws = sh.worksheet("Heroes")
-    heroes = [read_hero_row(heroes_ws, 2), read_hero_row(heroes_ws, 3)]
+    heroes = []
+    for r in range(2, 12):  # 2..11 inclusive
+        cls = (heroes_ws.acell(f"B{r}").value or "").strip()
+        if not cls:
+            continue  # skip blank rows
+        heroes.append(read_hero_row(heroes_ws, r))
 
     # Weapons tab: A2 name, B2 damage
     weapons_ws = sh.worksheet("Weapons")
