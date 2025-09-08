@@ -411,8 +411,8 @@ def read_weapons_block(ws) -> list[Weapon]:
              damage_min=low,
              damage_max=high,
              raw_weapon_damage=dmg_raw,
-             # special ability
-             special=(c or "").strip(),
+             # special ability (have to comment out for now)
+             # special=(c or "").strip(),
              # i case description for spec ability is added
              # special_desc=str(d or ""),
          ))
