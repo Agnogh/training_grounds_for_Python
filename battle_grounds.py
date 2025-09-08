@@ -22,7 +22,7 @@ import random
 def roll_damage(min_d: int, max_d: int) -> int:
     return random.randint(min_d, max_d)  # inclusive
 
-
+ 
 def _norm(s: str) -> str:
     """Lowercase/trim convenience for matching text safely."""
     return (s or "").strip().lower()
@@ -198,6 +198,9 @@ class Weapon:
     damage_min: int
     damage_max: int
     raw_weapon_damage: str
+    # in case I add description for special
+    # special: str = ""
+    # and I might decide that "description" is pulled from cell
 
 
 """
@@ -389,6 +392,31 @@ def read_monsters_block(ws) -> list[Monster_Character]:
             special_desc=str(g or ""),
         ))
     return monsters
+
+
+def read_weapons_block(ws) -> list[Weapon]: 
+    # A, B & C = type, damage & special ability(rows 2 to 11) 
+    block = ws.get("A2:C11")
+    weapons: list[Weapon] = []
+    for r_idx, row in enumerate(block, start=2):
+        row = (row + ["", "", ""])[:3]
+        a, b, c = row       # add "d" if spec desc is added
+        weapon_type = (a or "").strip()
+        if not weapon_type:
+            continue
+        dmg_raw = (b or "").strip()
+        low, high = parse_damage_range(dmg_raw)
+        weapons.append(Weapon(
+             type=weapon_type,
+             damage_min=low,
+             damage_max=high,
+             raw_weapon_damage=dmg_raw,
+             # special ability
+             special=(c or "").strip(),
+             # i case description for spec ability is added
+             # special_desc=str(d or ""),
+         ))
+    return weapons
 
 
 def as_range_or_none(val):
