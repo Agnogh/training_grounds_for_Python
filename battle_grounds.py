@@ -22,7 +22,7 @@ import random
 def roll_damage(min_d: int, max_d: int) -> int:
     return random.randint(min_d, max_d)  # inclusive
 
- 
+
 def _norm(s: str) -> str:
     """Lowercase/trim convenience for matching text safely."""
     return (s or "").strip().lower()
@@ -394,8 +394,8 @@ def read_monsters_block(ws) -> list[Monster_Character]:
     return monsters
 
 
-def read_weapons_block(ws) -> list[Weapon]: 
-    # A, B & C = type, damage & special ability(rows 2 to 11) 
+def read_weapons_block(ws) -> list[Weapon]:
+    # A, B & C = type, damage & special ability(rows 2 to 11)
     block = ws.get("A2:C11")
     weapons: list[Weapon] = []
     for r_idx, row in enumerate(block, start=2):
@@ -457,6 +457,17 @@ def load_from_gsheets():
     # 'sheets.googleapis.com' for consumer 'project_number:317396774673'.
     heroes = read_heroes_block(heroes_ws)
 
+    # WEAPONS — block read (A2:C11)
+    weapons = read_weapons_block(weapons_ws)
+
+    # MONSTERS (B2:G6) — one call to avoid
+    # calling API a lot
+    monsters = read_monsters_block(monsters_ws)
+
+    return heroes, weapons, monsters
+
+
+"""
     # WEAPON (still fine to read A2/B2 individually)
     weapon_name = weapons_ws.acell("A2").value
     weapon_damage_raw = weapons_ws.acell("B2").value
@@ -467,13 +478,7 @@ def load_from_gsheets():
         damage_max=w_high,
         raw_weapon_damage=str(weapon_damage_raw),
     )
-
-    # MONSTERS (B2:G6) — one call to avoid
-    # calling API a lot
-    monsters = read_monsters_block(monsters_ws)
-
-    return heroes, weapon, monsters
-
+"""
 
 """
     # Heroes tab- all heroes rows 2–11
@@ -556,7 +561,7 @@ def load_from_gsheets():
 def main():
     print("Welcome to battl")
 
-    heroes, weapon, monsters = load_from_gsheets()
+    heroes, weapons, monsters = load_from_gsheets()
 
 
 # choose hero now that we have aditional hero in play
@@ -569,6 +574,11 @@ def main():
     picked_monster = choose_from_list("Choose your Opponent", monster_names)
     monster = next(m for m in monsters if
                    m.chamption_od_darknes == picked_monster)
+
+# choose weapon (all weapons now)
+    weapon_names = [w.type for w in weapons]
+    picked_weapon = choose_from_list("Choose your Weapon", weapon_names)
+    weapon = next(w for w in weapons if w.type == picked_weapon)
 
     # show chosen hero stats
     print()
