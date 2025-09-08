@@ -203,20 +203,6 @@ class Weapon:
     # and I might decide that "description" is pulled from cell
 
 
-"""
-don't need this but do not want to delete
-until I am sure new stuff works
-@dataclass
-class Monster_Character:
-    chamption_od_darknes: str
-    armour: int
-    damage_min: int
-    damage_max: int
-    hit_points: int
-    raw_moster_damage: str
-
-"""
-
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -466,93 +452,12 @@ def load_from_gsheets():
 
     return heroes, weapons, monsters
 
-
-"""
-    # WEAPON (still fine to read A2/B2 individually)
-    weapon_name = weapons_ws.acell("A2").value
-    weapon_damage_raw = weapons_ws.acell("B2").value
-    w_low, w_high = parse_damage_range(weapon_damage_raw)
-    weapon = Weapon(
-        type=str(weapon_name),
-        damage_min=w_low,
-        damage_max=w_high,
-        raw_weapon_damage=str(weapon_damage_raw),
-    )
-"""
-
-"""
-    # Heroes tab- all heroes rows 2–11
-    heroes_ws = sh.worksheet("Heroes")
-    heroes = []
-    for r in range(2, 12):  # 2..11 inclusive
-        cls = (heroes_ws.acell(f"B{r}").value or "").strip()
-        if not cls:
-            continue  # skip blank rows
-        heroes.append(read_hero_row(heroes_ws, r))
-
-
-    # Weapons tab: A2 name, B2 damage
-    weapons_ws = sh.worksheet("Weapons")
-    weapon_name = weapons_ws.acell("A2").value
-    weapon_damage_raw = weapons_ws.acell("B2").value
-    w_low, w_high = parse_damage_range(weapon_damage_raw)
-    # adding type despite having one weapon as more will follow
-    weapon = Weapon(
-        type=str(weapon_name),
-        damage_min=w_low,
-        damage_max=w_high,
-        raw_weapon_damage=str(weapon_damage_raw),
-    )
-"""
-
 # I need to drop this part as I am geting
 # File "C:\ Users\Zombie\Desktop vscode-projects
 # training_grounds_for_Python\.venv\Lib
 # site-packages\gspread\http_client.py",
 # line 236, in values_get r = self.request
 # ("get", url, params=params)
-
-
-"""
-    # Monsters tab: rows 2 to 6 (Name in A is cosmetic)
-    monsters_ws = sh.worksheet("Monsters")
-    monsters = []
-    for r in range(2, 7):       # 2..6 inclusive
-        # skip blank rows (no class)
-        if not (monsters_ws.acell(f"B{r}").value or "").strip():
-            continue
-        monsters.append(read_monster_row(monsters_ws, r))
-
-    return heroes, weapon, monsters
-
-    return heroes, weapon, monsters  # <-- plural that was trolling me
-    # all this time!!
-"""
-
-"""
-    # keeping this part in case adding new monster goes to hell
-    # Monsters tab: B3 class, C3 armour, D3 is HP
-    # E3 is damage (range)
-    monsters_ws = sh.worksheet("Monsters")
-    monster_class = monsters_ws.acell("B3").value
-    monster_armour = int(monsters_ws.acell("C3").value)
-
-    monster_hp = coerce_int_strict(monsters_ws.acell("D3").value,
-                                   "Monsters!D3 (HP)")
-    monster_damage_raw = str(monsters_ws.acell("E3").value)
-    m_low, m_high = parse_damage_range(monster_damage_raw)
-    # for future monesters that will be added
-    monster = Monster_Character(
-        chamption_od_darknes=str(monster_class),
-        armour=monster_armour,
-        damage_min=m_low,
-        damage_max=m_high,
-        hit_points=monster_hp,
-        raw_moster_damage=monster_damage_raw,
-    )
-
-    return heroes, weapon, monster
-"""
 
 # Main game flow
 # =========================
@@ -613,22 +518,6 @@ def main():
     )
     print()
     print(stat_block("Round 1 — Simultaneous", rep["lines"]))
-
-    """ Keeping this for now in case 2 heroes fails
-    # 1) Hero list (one option to choose from)
-    picked_hero = auto_pick_single("Choose your Hero of light",
-                                   [hero.champion_of_light])
-    print()
-    print("choosing your chanpion")
-    print()
-    print(stat_block(
-        f"Hero: {picked_hero}",
-        [
-            f"Armour: {hero.armour}",
-            f"Hit Points: {hero.hit_points}",
-        ],
-    ))
-    """
 
 
 # --- One simultaneous round ---
