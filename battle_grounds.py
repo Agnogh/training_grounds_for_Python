@@ -57,7 +57,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     more specials ability later
     """
-    special = monster_special_for(monster)   # 'drain_life' or 'none' (for now)
+    monster_special = monster_special_for(monster)   # monsters spec ability
     hero_special = _norm(hero.special)      # hero healing hands ability
 
     # ===== STRIKES (simultaneous) =====
@@ -83,7 +83,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
         # now Ghost Shield - cap 1 *per strike* after armour abosrbs dmg
         capped = False
-        if special == "ghost_shield" and net > 1:
+        if monster_special == "ghost_shield" and net > 1:
             net = 1
             capped = True
 
@@ -103,7 +103,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # ===== POST-ROUND (always runs, can revive if allowed) =====
     specials_applied = []
     # if special is equal to "drain life" and damage to hero is over 0
-    if special == "drain_life" and dmg_to_hero > 0:
+    if monster_special == "drain_life" and dmg_to_hero > 0:
         if allow_revive or new_monster_hp > 0:
             # add 1HP to var new_monster_hp
             new_monster_hp += 1
