@@ -166,6 +166,56 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     return new_hero_hp, new_monster_hp, report
 
 
+def battle_loop(hero, weapon, monster):
+    round_no = 1
+    hero_hp = hero.hit_points
+    monster_hp = monster.hit_points
+
+    while True:
+        hero_hp, monster_hp, rep = resolve_simultaneous_round(
+            hero, weapon, monster, hero_hp, monster_hp, allow_revive=True
+        )
+
+        # Show what happened current round
+        print()
+        print(stat_block(f"Battle round {round_no}", rep["lines"]))
+
+        # Outcome banner for good win, bad win and both kill
+        if rep["outcome"] == "double_ko":
+            print(stat_block("Battle result",
+                             [f"Double kill! Both"
+                              f"{monster.chamption_od_darknes}"
+                              f" & {hero.champion_of_light} fall."]))
+            break
+        elif rep["outcome"] == "monster_defeated":
+            print(stat_block("Battle result",
+                             [f"{monster.chamption_od_darknes}"
+                              f"is defeated!"
+                              f"{hero.champion_of_light}"
+                              f"slayed the servent of dark!"]
+                             ))
+            break
+        elif rep["outcome"] == "hero_defeated":
+            print(stat_block("Battle result",
+                             [f"{hero.champion_of_light} is defeated!"
+                              f"{monster.chamption_od_darknes}"
+                              f"has defeated hero"]
+                             ))
+            break
+
+        # for player ot have option to continue or flee
+        choice = input("Press any key to continue, or 'F' to"
+                       "flee the battle: ").strip().lower()
+        if choice == "f":
+            print(stat_block("Battle", [f"{hero.champion_of_light} disengages"
+                                        f"and flees."]))
+            break
+
+        round_no += 1
+
+    return hero_hp, monster_hp, rep["outcome"]
+
+
 # --- Data classes ---
 
 
@@ -512,6 +562,12 @@ def main():
         ],
     ))
 
+    # --- Multi-round battle until defeat or flee ---
+    final_hero_hp, final_monster_hp, outcome = battle_loop(hero,
+                                                           weapon, monster)
+
+
+"""
     # One round (to try Drain Life)
     hero_hp, monster_hp, rep = resolve_simultaneous_round(
         hero, weapon, monster, hero.hit_points, monster.hit_points
@@ -527,6 +583,7 @@ def main():
                                                           monster.hit_points)
     print()
     print(stat_block("Round 1 — Simultaneous", rep["lines"]))
+
 
 # One time display
     if rep["outcome"] == "double_ko":
@@ -555,7 +612,7 @@ def main():
         print(stat_block("Round 1 — Result",
                          ["Both fighters still in the fight."]))
 
-
+"""
 if __name__ == "__main__":
     main()
 
