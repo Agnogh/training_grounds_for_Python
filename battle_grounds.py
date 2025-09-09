@@ -44,7 +44,10 @@ def monster_special_for(monster) -> str:
 
 def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                monster_hp: int,
-                               allow_revive: bool = True):
+                               allow_revive: bool = True,
+                               # need to add this for top limit of HP
+                               hero_max_hp: int | None = None,
+                               ):
     """
     Still simultanous but adding vampire skill drain life:
     - Vampire: 'Drain Life' -> if monster dealt damage to hero > 0
@@ -55,6 +58,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     more specials ability later
     """
     special = monster_special_for(monster)   # 'drain_life' or 'none' (for now)
+    hero_special = _norm(hero.special)      # hero healing hands ability
 
     # ===== STRIKES (simultaneous) =====
     # this is for spec.abiltiy quick hands (2 times attack)
@@ -104,6 +108,20 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             # add 1HP to var new_monster_hp
             new_monster_hp += 1
             specials_applied.append("Drain Life: monster +1 HP")
+
+    # if hero ability "Healing Touch" exist (+1 HP, capped at max)
+    if "healing touch" in hero_special:
+        if allow_revive or new_hero_hp > 0:     #
+            hp_after_healing = new_hero_hp + 1     # add 1HP to temp variable
+            if hero_max_hp is not None:     # if hero is at maxHP
+                # takes smaller value between the 2 and assign to "healted_to"
+                hp_after_healing = min(hero_max_hp, hp_after_healing)
+            gain = hp_after_healing - new_hero_hp
+            if gain > 0:        # if there was increase of HP
+                new_hero_hp = hp_after_healing
+                specials_applied.append("Healing Touch: hero +1 HP")
+            else:       # if hero is at full health trigger following
+                specials_applied.append("Healing Touch: no effect-max HP)")
 
     # ===== pretty print lines =====
     lines = []
@@ -173,7 +191,8 @@ def battle_loop(hero, weapon, monster):
 
     while True:
         hero_hp, monster_hp, rep = resolve_simultaneous_round(
-            hero, weapon, monster, hero_hp, monster_hp, allow_revive=True
+            hero, weapon, monster, hero_hp, monster_hp, allow_revive=True,
+            hero_max_hp=hero.hit_points,
         )
 
         # Show what happened current round
