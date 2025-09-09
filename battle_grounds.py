@@ -28,6 +28,15 @@ def _norm(s: str) -> str:
     return (s or "").strip().lower()
 
 
+def hero_special_for(hero) -> str:
+    he = _norm(getattr(hero, "special", ""))
+    if "healing touch" in he:
+        return "healing_touch"
+    if "quick" in he and "hand" in he:
+        return "quick_hands"
+    return "none"
+
+
 def monster_special_for(monster) -> str:
     """
     this should wire Vampire -> 'drain_life'.
@@ -58,7 +67,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     more specials ability later
     """
     monster_special = monster_special_for(monster)   # monsters spec ability
-    hero_special = _norm(hero.special)      # hero healing hands ability
+    hero_special = hero_special_for(hero)      # hero healing hands ability
+    # will be added once I start adding special ability for weapons
+    # weapon_special  = weapon_special_for(weapon)
 
     # ===== STRIKES (simultaneous) =====
     # this is for spec.abiltiy quick hands (2 times attack)
