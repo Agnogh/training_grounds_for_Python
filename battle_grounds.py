@@ -48,6 +48,8 @@ def monster_special_for(monster) -> str:
         return "drain_life"
     if m in ("wraight", "wraith"):      # I made typo so if i ever fix it
         return "ghost_shield"
+    if m == "zombie":       # if monster is zombie
+        return "death_grip"     # give it spec abiltiy for zombie
     return "none"
 
 
@@ -119,6 +121,14 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             # add 1HP to var new_monster_hp
             new_monster_hp += 1
             specials_applied.append("Drain Life: monster +1 HP")
+
+    if monster_special == "death_grip":
+        before_death_grip = new_hero_hp
+        new_hero_hp = max(0, new_hero_hp - 1)
+        specials_applied.append(
+            f"Death Grip effect: hero had {before_death_grip} and after "
+            f"Zombie effect that passed through armour, it "
+            f"reduced hero HP by -1 HP and new HP is {new_hero_hp}")
 
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
     if "healing touch" in hero_special:
