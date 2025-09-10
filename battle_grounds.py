@@ -34,6 +34,8 @@ def hero_special_for(hero) -> str:
         return "healing_touch"
     if "quick" in he and "hand" in he:
         return "quick_hands"
+    if "thorns" in he and "shield" in he:
+        return "thorns_shield"
     return "none"
 
 
@@ -143,6 +145,17 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 specials_applied.append("Healing Touch: hero +1 HP")
             else:       # if hero is at full health trigger following
                 specials_applied.append("Healing Touch: no effect-max HP)")
+
+    # Druid special ability "Thornes shield" and formated description steing
+    if "thorns shield" in hero_special:
+        monster_attempted_damage = any(raw > 0 for raw in monster_raw_damage)
+        if monster_attempted_damage:
+            before_thornes_shielkd = new_monster_hp
+            new_monster_hp = max(0, new_monster_hp - 1)
+            specials_applied.append(
+                f"Thonrs shield effect returns 1 HP damage resulting"
+                f"monster drops from {before_thornes_shielkd} to"
+                f"{new_monster_hp}")
 
     # ===== pretty print lines =====
     lines = []
