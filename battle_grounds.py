@@ -40,6 +40,8 @@ def hero_special_for(hero) -> str:
         return "fireball"
     if "destroy" in he and "undead" in he:
         return "destroy_undead"
+    if "deadly" in he and "poison" in he:
+        return "deadly_poison"
     return "none"
 
 
@@ -171,13 +173,24 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         )
 
     # Crusader special ability "destroy undead" and formated description steing
-    if "Destroy undead" in hero_special:
+    if "destroy undead" in hero_special:
         before_destroy_undead = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(
             f"Crusader cast Destroy undead and reduced monsters"
             f"HP from {before_destroy_undead} to {new_monster_hp}"
         )
+
+    # Assassin special ability "deadly poison" if armour was penetrated
+    if "deadly poison" in hero_special:
+        hero_attempted_damage = any(raw > 0 for raw in hero_actual_damage)
+        if hero_attempted_damage:
+            before_deadly_poison = new_monster_hp
+            new_monster_hp = max(0, new_monster_hp - 2)
+            specials_applied.append(
+                f"blade penetrated the armour and posin took its effect"
+                f"monster lost 2Hp of health and dropped from"
+                f"{before_deadly_poison} to {new_monster_hp}")
 
     # ===== pretty print lines =====
     lines = []
