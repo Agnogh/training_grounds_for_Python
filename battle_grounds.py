@@ -38,6 +38,8 @@ def hero_special_for(hero) -> str:
         return "thorns_shield"
     if "fireball" in he:
         return "fireball"
+    if "destroy" in he and "undead" in he:
+        return "destroy_undead"
     return "none"
 
 
@@ -166,6 +168,15 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         specials_applied.append(
             f"Fireball effect does fire damage to monster causing it"
             f"to drop HP from {before_fireball} to {new_monster_hp}"
+        )
+
+    # Crusader special ability "destroy undead" and formated description steing
+    if "Destroy undead" in hero_special:
+        before_destroy_undead = new_monster_hp
+        new_monster_hp = max(0, new_monster_hp - 1)
+        specials_applied.append(
+            f"Crusader cast Destroy undead and reduced monsters"
+            f"HP from {before_destroy_undead} to {new_monster_hp}"
         )
 
     # ===== pretty print lines =====
