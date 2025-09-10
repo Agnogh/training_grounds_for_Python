@@ -36,6 +36,8 @@ def hero_special_for(hero) -> str:
         return "quick_hands"
     if "thorns" in he and "shield" in he:
         return "thorns_shield"
+    if "fireball" in he:
+        return "fireball"
     return "none"
 
 
@@ -156,6 +158,15 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 f"Thonrs shield effect returns 1 HP damage resulting"
                 f"monster drops from {before_thornes_shielkd} to"
                 f"{new_monster_hp}")
+
+    # Mage special ability "fireball" and formated description steing
+    if "fireball" in hero_special:
+        before_fireball = new_monster_hp
+        new_monster_hp = max(0, new_monster_hp - 1)
+        specials_applied.append(
+            f"Fireball effect does fire damage to monster causing it"
+            f"to drop HP from {before_fireball} to {new_monster_hp}"
+        )
 
     # ===== pretty print lines =====
     lines = []
