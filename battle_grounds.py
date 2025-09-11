@@ -44,13 +44,15 @@ def hero_special_for(hero) -> str:
         return "deadly_poison"
     return "none"
 
-
+    """ I am trying to unify the code UNIFICATION OF CODE
 def monster_special_for(monster) -> str:
+    """
     """
     this should wire Vampire -> 'drain_life'.
     Later I might add mapping for tohers
     (Skeleton->none, ghost_shield for Wraight, Zombies death grip..).
     """
+
     m = _norm(monster.chamption_od_darknes)  # e.g., "vampire"
     if m == "vampire":      # for vapire ability
         return "drain_life"
@@ -67,6 +69,11 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                # need to add this for top limit of HP
                                hero_max_hp: int | None = None,
                                ):
+    # trying to apply normalization
+    hero_special = _norm(getattr(hero, "special", ""))
+    monster_special = _norm(getattr(monster, "special", ""))
+    weapon_special = _norm(getattr(weapon, "special", ""))
+
     """
     Still simultanous but adding vampire skill drain life:
     - Vampire: 'Drain Life' -> if monster dealt damage to hero > 0
@@ -76,14 +83,21 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     more specials ability later
     """
+
+    """ I am removing this as I am trying UNIFICATION OF CODE
     monster_special = monster_special_for(monster)   # monsters spec ability
+    """
     hero_special = hero_special_for(hero)      # hero healing hands ability
     # will be added once I start adding special ability for weapons
     # weapon_special  = weapon_special_for(weapon)
 
     # ===== STRIKES (simultaneous) =====
     # this is for spec.abiltiy quick hands (2 times attack)
+    """ Replacing this line with bottom line - UNIFICATION OF CODE
     hero_strikes = 2 if "quick hands" in _norm(hero.special) else 1
+    """
+    hero_strikes = 2 if ("quick" in hero_special and
+                         "hand" in hero_special) else 1
     # for now I am nto planing to create monster that atatcks 2 times
     monster_strikes = 1
 
@@ -103,6 +117,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         net = max(0, r - monster.armour)
 
         # now Ghost Shield - cap 1 *per strike* after armour abosrbs dmg
+        """ Commeting this out due to UNIFICATION OF CODE-replacing with bottom
         capped = False
         if monster_special == "ghost_shield" and net > 1:
             net = 1
@@ -112,6 +127,22 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         hero_cap_flags.append(capped)
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
+        """
+
+    for r in hero_raw_damage:
+        net = max(0, r - monster.armour)
+
+    # Ghost Shield— cap per strike AFTER armour aborbs damage
+        if ("ghost" in monster_special and "shield" in monster_special) and net > 1:
+            net = 1
+            hero_cap_flags.append(True)
+        else:
+            hero_cap_flags.append(False)
+
+        hero_actual_damage.append(net)
+
+    monster_actual_damage = [max(0, r - hero.armour)
+                             for r in monster_raw_damage]
 
     # actual damage done and assigning to variable dmg_to_monster/hero
     dmg_to_monster = sum(hero_actual_damage)
@@ -139,7 +170,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"reduced hero HP by -1 HP and new HP is {new_hero_hp}")
 
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
+        """ replacing old with new code due to UNIFICATION OF CODE
     if "healing touch" in hero_special:
+        """
+    if ("healing" in hero_special and "touch" in hero_special):
         if allow_revive or new_hero_hp > 0:     #
             hp_after_healing = new_hero_hp + 1     # add 1HP to temp variable
             if hero_max_hp is not None:     # if hero is at maxHP
@@ -153,8 +187,17 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 specials_applied.append("Healing Touch: no effect-max HP)")
 
     # Druid special ability "Thornes shield" and formated description steing
+    """ UNIFICATION OF CODE
     if "thorns shield" in hero_special:
-        monster_attempted_damage = any(raw > 0 for raw in monster_raw_damage)
+    """
+    if ("thorns" in hero_special and "shield" in hero_special) and dmg_to_hero > 0:
+        monster_attempted_damage = any(raw > 0
+                                       for raw in monster_raw_damage)
+        before = new_monster_hp
+        new_monster_hp = max(0, new_monster_hp - 1)
+        specials_applied.append(f"Thorns Shield: monster"
+                                f"{before} → {new_monster_hp}")
+        """ UNIFICATION OF CODE
         if monster_attempted_damage:
             before_thornes_shielkd = new_monster_hp
             new_monster_hp = max(0, new_monster_hp - 1)
@@ -162,6 +205,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 f"Thonrs shield effect returns 1 HP damage resulting"
                 f"monster drops from {before_thornes_shielkd} to"
                 f"{new_monster_hp}")
+        """
 
     # Mage special ability "fireball" and formated description steing
     if "fireball" in hero_special:
