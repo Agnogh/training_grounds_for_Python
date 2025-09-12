@@ -66,10 +66,6 @@ def monster_special_for(monster) -> str:
     return "none"
 """
 
-hero_special = _norm(getattr(hero, "special", ""))
-monster_special = _norm(getattr(monster, "special", ""))
-# weapon_special  = _norm(getattr(weapon, "special", ""))   # not use ATM
-
 
 def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                monster_hp: int,
@@ -95,7 +91,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     """ I am removing this as I am trying UNIFICATION OF CODE
     monster_special = monster_special_for(monster)   # monsters spec ability
     """
-    hero_special = hero_special_for(hero)      # hero healing hands ability
+    # hero_special = hero_special_for(hero)      # hero healing hands ability
     # will be added once I start adding special ability for weapons
     # weapon_special  = weapon_special_for(weapon)
 
@@ -140,9 +136,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
         hero_actual_damage.append(net)
         hero_cap_flags.append(capped)
+        """
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
-        """
 
     # actual damage done and assigning to variable dmg_to_monster/hero
     dmg_to_monster = sum(hero_actual_damage)
@@ -176,7 +172,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         new_hero_hp = max(0, new_hero_hp - 1)
         specials_applied.append(f"Death Grip: hero {before_deth_grip}"
                                 f" → {new_hero_hp}")
-        
+
     """ Commenting out due to UNIFICATION OF CODE
     if monster_special == "death_grip":
         before_death_grip = new_hero_hp
