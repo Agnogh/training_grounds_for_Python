@@ -124,7 +124,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         net = max(0, r - monster.armour)
         # Ghost Shield— cap per strike AFTER armour aborbs damage
         if ("ghost" in monster_special and "shield"
-            in monster_special) and net > 1:
+                in monster_special) and net > 1:
             net = 1
             hero_cap_flags.append(True)
         else:
@@ -155,12 +155,29 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # ===== POST-ROUND (always runs, can revive if allowed) =====
     specials_applied = []
     # if special is equal to "drain life" and damage to hero is over 0
+    """ New approach - UNIFICATION OF CODE
     if monster_special == "drain_life" and dmg_to_hero > 0:
         if allow_revive or new_monster_hp > 0:
             # add 1HP to var new_monster_hp
             new_monster_hp += 1
             specials_applied.append("Drain Life: monster +1 HP")
+    """
 
+    # Vapire spec ability Drain life
+    if ("drain" in monster_special and "life" in
+            monster_special) and dmg_to_hero > 0:
+        if allow_revive or new_monster_hp > 0:
+            new_monster_hp += 1
+            specials_applied.append("Drain Life: monster +1 HP")
+
+    # Zombie effect death grip
+    if ("death" in monster_special and "grip" in monster_special):
+        before_deth_grip = new_hero_hp
+        new_hero_hp = max(0, new_hero_hp - 1)
+        specials_applied.append(f"Death Grip: hero {before_deth_grip}"
+                                f" → {new_hero_hp}")
+        
+    """ Commenting out due to UNIFICATION OF CODE
     if monster_special == "death_grip":
         before_death_grip = new_hero_hp
         new_hero_hp = max(0, new_hero_hp - 1)
@@ -168,9 +185,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"Death Grip effect: hero had {before_death_grip} and after "
             f"Zombie effect that passed through armour, it "
             f"reduced hero HP by -1 HP and new HP is {new_hero_hp}")
-
+    """
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
-        """ replacing old with new code due to UNIFICATION OF CODE
+    """ replacing old with new code due to UNIFICATION OF CODE
     if "healing touch" in hero_special:
         """
     if ("healing" in hero_special and "touch" in hero_special):
@@ -191,7 +208,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     if "thorns shield" in hero_special:
     """
     if ("thorns" in hero_special and "shield" in
-        hero_special) and dmg_to_hero > 0:
+            hero_special) and dmg_to_hero > 0:
         # monster_attempted_damage = any(raw > 0
         #                                for raw in monster_raw_damage)
         before = new_monster_hp
