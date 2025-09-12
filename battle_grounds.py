@@ -44,15 +44,18 @@ def hero_special_for(hero) -> str:
         return "deadly_poison"
     return "none"
 
-    """ I am trying to unify the code UNIFICATION OF CODE
+
+""" I am trying to unify the code UNIFICATION OF CODE
 def monster_special_for(monster) -> str:
-    """
-    """
+"""
+
+"""
     this should wire Vampire -> 'drain_life'.
     Later I might add mapping for tohers
     (Skeleton->none, ghost_shield for Wraight, Zombies death grip..).
-    """
+"""
 
+"""
     m = _norm(monster.chamption_od_darknes)  # e.g., "vampire"
     if m == "vampire":      # for vapire ability
         return "drain_life"
@@ -61,6 +64,11 @@ def monster_special_for(monster) -> str:
     if m == "zombie":       # if monster is zombie
         return "death_grip"     # give it spec abiltiy for zombie
     return "none"
+"""
+
+hero_special = _norm(getattr(hero, "special", ""))
+monster_special = _norm(getattr(monster, "special", ""))
+# weapon_special  = _norm(getattr(weapon, "special", ""))   # not use ATM
 
 
 def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
@@ -72,7 +80,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # trying to apply normalization
     hero_special = _norm(getattr(hero, "special", ""))
     monster_special = _norm(getattr(monster, "special", ""))
-    weapon_special = _norm(getattr(weapon, "special", ""))
+    # weapon_special = _norm(getattr(weapon, "special", ""))
 
     """
     Still simultanous but adding vampire skill drain life:
@@ -111,10 +119,17 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # + with Ghost Shield
     hero_actual_damage = []
     hero_cap_flags = []   # track which strikes got capped (cosmetics)
-
     for r in hero_raw_damage:
         # armour first as wraight has 1 armour
         net = max(0, r - monster.armour)
+        # Ghost Shield— cap per strike AFTER armour aborbs damage
+        if ("ghost" in monster_special and "shield"
+            in monster_special) and net > 1:
+            net = 1
+            hero_cap_flags.append(True)
+        else:
+            hero_cap_flags.append(False)
+        hero_actual_damage.append(net)
 
         # now Ghost Shield - cap 1 *per strike* after armour abosrbs dmg
         """ Commeting this out due to UNIFICATION OF CODE-replacing with bottom
@@ -128,21 +143,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
         """
-
-    for r in hero_raw_damage:
-        net = max(0, r - monster.armour)
-
-    # Ghost Shield— cap per strike AFTER armour aborbs damage
-        if ("ghost" in monster_special and "shield" in monster_special) and net > 1:
-            net = 1
-            hero_cap_flags.append(True)
-        else:
-            hero_cap_flags.append(False)
-
-        hero_actual_damage.append(net)
-
-    monster_actual_damage = [max(0, r - hero.armour)
-                             for r in monster_raw_damage]
 
     # actual damage done and assigning to variable dmg_to_monster/hero
     dmg_to_monster = sum(hero_actual_damage)
@@ -190,9 +190,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     """ UNIFICATION OF CODE
     if "thorns shield" in hero_special:
     """
-    if ("thorns" in hero_special and "shield" in hero_special) and dmg_to_hero > 0:
-        monster_attempted_damage = any(raw > 0
-                                       for raw in monster_raw_damage)
+    if ("thorns" in hero_special and "shield" in
+        hero_special) and dmg_to_hero > 0:
+        # monster_attempted_damage = any(raw > 0
+        #                                for raw in monster_raw_damage)
         before = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(f"Thorns Shield: monster"
@@ -217,7 +218,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         )
 
     # Crusader special ability "destroy undead" and formated description steing
-    if "destroy undead" in hero_special:
+    if ("destroy" in hero_special and "undead" in hero_special):
         before_destroy_undead = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(
@@ -226,7 +227,13 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         )
 
     # Assassin special ability "deadly poison" if armour was penetrated
-    if "deadly poison" in hero_special:
+    if ("deadly" in hero_special and "poison" in hero_special):
+        if any(net > 0 for net in hero_actual_damage):
+            before = new_monster_hp
+            new_monster_hp = max(0, new_monster_hp - 2)
+            specials_applied.append(f"Deadly Poison: monster {before}"
+                                    f" → {new_monster_hp}")
+    """
         hero_attempted_damage = any(raw > 0 for raw in hero_actual_damage)
         if hero_attempted_damage:
             before_deadly_poison = new_monster_hp
@@ -235,7 +242,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 f"blade penetrated the armour and posin took its effect"
                 f"monster lost 2Hp of health and dropped from"
                 f"{before_deadly_poison} to {new_monster_hp}")
-
+    """
     # ===== pretty print lines =====
     lines = []
     for i, (raw, net, capped) in enumerate(zip(
