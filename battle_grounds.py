@@ -128,8 +128,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                     f"reducing it (-1)"
                 )
             else:
-                specials_applied.append("Holy Might: "
-                                        "no effect (monster armour already 0)")
+                specials_applied.append("Armour Shred: "
+                                        "no effect (Hero armour already 0)")
 
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
     if ("healing" in hero_special and "touch" in hero_special):
