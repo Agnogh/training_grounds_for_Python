@@ -45,28 +45,6 @@ def hero_special_for(hero) -> str:
     return "none"
 
 
-""" I am trying to unify the code UNIFICATION OF CODE
-def monster_special_for(monster) -> str:
-"""
-
-"""
-    this should wire Vampire -> 'drain_life'.
-    Later I might add mapping for tohers
-    (Skeleton->none, ghost_shield for Wraight, Zombies death grip..).
-"""
-
-"""
-    m = _norm(monster.chamption_od_darknes)  # e.g., "vampire"
-    if m == "vampire":      # for vapire ability
-        return "drain_life"
-    if m in ("wraight", "wraith"):      # I made typo so if i ever fix it
-        return "ghost_shield"
-    if m == "zombie":       # if monster is zombie
-        return "death_grip"     # give it spec abiltiy for zombie
-    return "none"
-"""
-
-
 def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                monster_hp: int,
                                allow_revive: bool = True,
@@ -78,28 +56,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     monster_special = _norm(getattr(monster, "special", ""))
     # weapon_special = _norm(getattr(weapon, "special", ""))
 
-    """
-    Still simultanous but adding vampire skill drain life:
-    - Vampire: 'Drain Life' -> if monster dealt damage to hero > 0
-      actual damage this round, heal vampire for +1 HP *after*
-      the strikes (can revive vampire if vampire ends up on 0hp
-      after combat round -allow_revive=True).
-
-    more specials ability later
-    """
-
-    """ I am removing this as I am trying UNIFICATION OF CODE
-    monster_special = monster_special_for(monster)   # monsters spec ability
-    """
-    # hero_special = hero_special_for(hero)      # hero healing hands ability
-    # will be added once I start adding special ability for weapons
-    # weapon_special  = weapon_special_for(weapon)
-
     # ===== STRIKES (simultaneous) =====
-    # this is for spec.abiltiy quick hands (2 times attack)
-    """ Replacing this line with bottom line - UNIFICATION OF CODE
-    hero_strikes = 2 if "quick hands" in _norm(hero.special) else 1
-    """
     hero_strikes = 2 if ("quick" in hero_special and
                          "hand" in hero_special) else 1
     # for now I am nto planing to create monster that atatcks 2 times
@@ -127,16 +84,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             hero_cap_flags.append(False)
         hero_actual_damage.append(net)
 
-        # now Ghost Shield - cap 1 *per strike* after armour abosrbs dmg
-        """ Commeting this out due to UNIFICATION OF CODE-replacing with bottom
-        capped = False
-        if monster_special == "ghost_shield" and net > 1:
-            net = 1
-            capped = True
-
-        hero_actual_damage.append(net)
-        hero_cap_flags.append(capped)
-        """
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
 
@@ -151,14 +98,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # ===== POST-ROUND (always runs, can revive if allowed) =====
     specials_applied = []
     # if special is equal to "drain life" and damage to hero is over 0
-    """ New approach - UNIFICATION OF CODE
-    if monster_special == "drain_life" and dmg_to_hero > 0:
-        if allow_revive or new_monster_hp > 0:
-            # add 1HP to var new_monster_hp
-            new_monster_hp += 1
-            specials_applied.append("Drain Life: monster +1 HP")
-    """
-
     # Vapire spec ability Drain life
     if ("drain" in monster_special and "life" in
             monster_special) and dmg_to_hero > 0:
@@ -173,19 +112,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         specials_applied.append(f"Death Grip: hero {before_deth_grip}"
                                 f" → {new_hero_hp}")
 
-    """ Commenting out due to UNIFICATION OF CODE
-    if monster_special == "death_grip":
-        before_death_grip = new_hero_hp
-        new_hero_hp = max(0, new_hero_hp - 1)
-        specials_applied.append(
-            f"Death Grip effect: hero had {before_death_grip} and after "
-            f"Zombie effect that passed through armour, it "
-            f"reduced hero HP by -1 HP and new HP is {new_hero_hp}")
-    """
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
-    """ replacing old with new code due to UNIFICATION OF CODE
-    if "healing touch" in hero_special:
-        """
     if ("healing" in hero_special and "touch" in hero_special):
         if allow_revive or new_hero_hp > 0:     #
             hp_after_healing = new_hero_hp + 1     # add 1HP to temp variable
@@ -200,9 +127,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 specials_applied.append("Healing Touch: no effect-max HP)")
 
     # Druid special ability "Thornes shield" and formated description steing
-    """ UNIFICATION OF CODE
-    if "thorns shield" in hero_special:
-    """
     if ("thorns" in hero_special and "shield" in
             hero_special) and dmg_to_hero > 0:
         # monster_attempted_damage = any(raw > 0
@@ -211,15 +135,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(f"Thorns Shield: monster"
                                 f"{before} → {new_monster_hp}")
-        """ UNIFICATION OF CODE
-        if monster_attempted_damage:
-            before_thornes_shielkd = new_monster_hp
-            new_monster_hp = max(0, new_monster_hp - 1)
-            specials_applied.append(
-                f"Thonrs shield effect returns 1 HP damage resulting"
-                f"monster drops from {before_thornes_shielkd} to"
-                f"{new_monster_hp}")
-        """
 
     # Mage special ability "fireball" and formated description steing
     if "fireball" in hero_special:
@@ -246,16 +161,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             new_monster_hp = max(0, new_monster_hp - 2)
             specials_applied.append(f"Deadly Poison: monster {before}"
                                     f" → {new_monster_hp}")
-    """
-        hero_attempted_damage = any(raw > 0 for raw in hero_actual_damage)
-        if hero_attempted_damage:
-            before_deadly_poison = new_monster_hp
-            new_monster_hp = max(0, new_monster_hp - 2)
-            specials_applied.append(
-                f"blade penetrated the armour and posin took its effect"
-                f"monster lost 2Hp of health and dropped from"
-                f"{before_deadly_poison} to {new_monster_hp}")
-    """
+
     # ===== pretty print lines =====
     lines = []
     for i, (raw, net, capped) in enumerate(zip(
@@ -719,52 +625,6 @@ def main():
                                                            weapon, monster)
 
 
-"""
-    # One round (to try Drain Life)
-    hero_hp, monster_hp, rep = resolve_simultaneous_round(
-        hero, weapon, monster, hero.hit_points, monster.hit_points
-    )
-    print()
-    print(stat_block("Round 1 — Simultaneous", rep["lines"]))
-
-
-# --- One simultaneous round ---
-    hero_hp, monster_hp, rep = resolve_simultaneous_round(hero, weapon,
-                                                          monster,
-                                                          hero.hit_points,
-                                                          monster.hit_points)
-    print()
-    print(stat_block("Round 1 — Simultaneous", rep["lines"]))
-
-
-# One time display
-    if rep["outcome"] == "double_ko":
-        print(stat_block("Round 1 — Result",
-                         ["Double KO! Both fall together."]))
-    elif rep["outcome"] == "monster_defeated":
-        print(stat_block("Round 1 — Result", [f"{monster.chamption_od_darknes}"
-                                              f"is defeated!"]))
-    elif rep["outcome"] == "hero_defeated":
-        print(stat_block("Round 1 — Result", [f"{hero.champion_of_light}"
-                                              f"is defeated!"]))
-    else:
-        print(stat_block("Round 1 — Result", ["Both fighters still stand."]))
-
-    # Outcome banner
-    if rep["outcome"] == "double_ko":
-        print(stat_block("Round 1 — Result",
-                         ["Double KO! Both fall together."]))
-    elif rep["outcome"] == "monster_defeated":
-        print(stat_block("Round 1 — Result",
-                         [f"{monster.chamption_od_darknes} is defeated!"]))
-    elif rep["outcome"] == "hero_defeated":
-        print(stat_block("Round 1 — Result",
-                         [f"{hero.champion_of_light} is defeated!"]))
-    else:
-        print(stat_block("Round 1 — Result",
-                         ["Both fighters still in the fight."]))
-
-"""
 if __name__ == "__main__":
     main()
 
