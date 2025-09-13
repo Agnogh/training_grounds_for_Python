@@ -56,11 +56,23 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # trying to apply normalization
     hero_special = _norm(getattr(hero, "special", ""))
     monster_special = _norm(getattr(monster, "special", ""))
-    # weapon_special = _norm(getattr(weapon, "special", ""))
+    weapon_special = _norm(getattr(weapon, "special", ""))
 
     # ===== STRIKES (simultaneous) =====
-    hero_strikes = 2 if ("quick" in hero_special and
-                         "hand" in hero_special) else 1
+    hero_strikes = 1
+    if ("quick" in hero_special and "hand" in hero_special):
+        hero_strikes = 2
+
+    if (
+        ("attack" in weapon_special and "2" in weapon_special) or
+        ("attack" in weapon_special and "two" in weapon_special) or
+        ("x2" in weapon_special)
+    ):
+
+        hero_strikes = max(hero_strikes, 2)
+
+    # hero_strikes = 2 if ("quick" in hero_special and
+    #                      "hand" in hero_special) else 1
     # for now I am nto planing to create monster that atatcks 2 times
     monster_strikes = 1
 
@@ -195,6 +207,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         else:
             specials_applied.append("Holy Might: "
                                     "no effect (monster armour already 0)")
+
+    if hero_strikes == 2 and not ("quick" in hero_special and "hand" in hero_special):
+        if ("attack" in weapon_special) or ("x2" in weapon_special):
+            specials_applied.append(f"{weapon.type}: attack 2 times (grants +1 strike)")
 
     # ===== pretty print lines =====
     lines = []
@@ -341,7 +357,7 @@ class Weapon:
     damage_max: int
     raw_weapon_damage: str
     # in case I add description for special
-    # special: str = ""
+    special: str = ""
     # and I might decide that "description" is pulled from cell
 
 
@@ -539,8 +555,8 @@ def read_weapons_block(ws) -> list[Weapon]:
              damage_min=low,
              damage_max=high,
              raw_weapon_damage=dmg_raw,
-             # special ability (have to comment out for now)
-             # special=(c or "").strip(),
+             # special ability (we are on now!!)
+             special=(c or "").strip(),
              # i case description for spec ability is added
              # special_desc=str(d or ""),
          ))
