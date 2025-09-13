@@ -165,7 +165,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                     f" → {new_monster_hp}")
 
     # --- Holy Might: -1 armour AFTER the battle round ---
-    if hero_special == "holly_might" or ("holly" in hero_special and "might" in hero_special):
+    if "might" in hero_special and ("holly" in hero_special or "holy" in hero_special):
         before_holly_might_armour = monster.armour
         if before_holly_might_armour > 0:
             monster.armour = before_holly_might_armour - 1
