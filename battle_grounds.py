@@ -57,19 +57,26 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     hero_special = _norm(getattr(hero, "special", ""))
     monster_special = _norm(getattr(monster, "special", ""))
     weapon_special = _norm(getattr(weapon, "special", ""))
+    weapon_type = _norm(getattr(weapon, "type", ""))
 
     # ===== STRIKES (simultaneous) =====
     hero_strikes = 1
     if ("quick" in hero_special and "hand" in hero_special):
         hero_strikes = 2
 
-    if (
-        ("attack" in weapon_special and "2" in weapon_special) or
-        ("attack" in weapon_special and "two" in weapon_special) or
-        ("x2" in weapon_special)
-    ):
+    # 2 times string with one weapons (dual daggers)
+    two_rolls_one_weapon = (
+        ("attack" in weapon_special
+         and "2" in weapon_special
+         and "time" in weapon_special) or
+        ("attack" in weapon_special
+         and "two" in weapon_special
+         and "time" in weapon_special) or
+        ("dual" in weapon_type
+         and "dagger" in weapon_type)
+                )
 
-        hero_strikes = max(hero_strikes, 2)
+    # hero_strikes = max(hero_strikes, 2)
 
     # hero_strikes = 2 if ("quick" in hero_special and
     #                      "hand" in hero_special) else 1
@@ -81,6 +88,18 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                        for _ in range(hero_strikes)]
     monster_raw_damage = [roll_damage(monster.damage_min, monster.damage_max)
                           for _ in range(monster_strikes)]
+
+    hero_raw_components = []
+    for _ in range(hero_strikes):
+        if two_rolls_one_weapon:
+            a = roll_damage(weapon.damage_min, weapon.damage_max)
+            b = roll_damage(weapon.damage_min, weapon.damage_max)
+            hero_raw_components.append([a, b])
+        else:
+            a = roll_damage(weapon.damage_min, weapon.damage_max)
+            hero_raw_components.append([a])
+
+    hero_raw_damage = [sum(parts) for parts in hero_raw_components]
 
     # value of damange after armour is applied -apply armour per strike
     # + with Ghost Shield
@@ -127,8 +146,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                 f" → {new_hero_hp}")
 
     # Armour Shread -1 armour to hero appllied AFTER battle round
-    if "armour" in monster_special and ("shread" in monster_special or "shred" in monster_special):
-        successful_hits_by_werewolf = sum(1 for net in monster_raw_damage if net > 0)
+    if (
+        "armour" in monster_special
+        and ("shread" in monster_special or "shred" in monster_special)
+    ):
+        successful_hits_by_werewolf = sum(1 for net in monster_raw_damage
+                                          if net > 0)
         if successful_hits_by_werewolf > 0:
             before_armour_shred_armour = hero.armour
             if before_armour_shred_armour > 0:
@@ -194,7 +217,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                     f" → {new_monster_hp}")
 
     # --- Holy Might: -1 armour AFTER the battle round ---
-    if "might" in hero_special and ("holly" in hero_special or "holy" in hero_special):
+    if "might" in hero_special and ("holly" in hero_special
+                                    or "holy" in hero_special):
         before_holly_might_armour = monster.armour
         if before_holly_might_armour > 0:
             monster.armour = before_holly_might_armour - 1
@@ -210,7 +234,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     if hero_strikes == 2 and not ("quick" in hero_special and "hand" in hero_special):
         if ("attack" in weapon_special) or ("x2" in weapon_special):
-            specials_applied.append(f"{weapon.type}: attack 2 times (grants +1 strike)")
+            specials_applied.append(f"{weapon.type}: attack 2 times"
+                                    f"(grants +1 strike)")
 
     # ===== pretty print lines =====
     lines = []
