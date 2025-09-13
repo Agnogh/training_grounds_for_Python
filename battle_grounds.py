@@ -114,6 +114,23 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         specials_applied.append(f"Death Grip: hero {before_deth_grip}"
                                 f" → {new_hero_hp}")
 
+    # Armour Shread -1 armour to hero appllied AFTER battle round
+    if "armour" in monster_special and ("shread" in monster_special or "shred" in monster_special):
+        successful_hits_by_werewolf = sum(1 for net in monster_actual_damage if net > 0)
+        if successful_hits_by_werewolf > 0:
+            before_armour_shred_armour = hero.armour
+            if before_armour_shred_armour > 0:
+                hero.armour = before_armour_shred_armour - 1
+                specials_applied.append(
+                    f"Armor Shred: {hero.champion_of_light} armour"
+                    f"dropped from {before_armour_shred_armour} "
+                    f" to {hero.armour} due to {monster_special}"
+                    f"reducing it (-1)"
+                )
+            else:
+                specials_applied.append("Holy Might: "
+                                        "no effect (monster armour already 0)")
+
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
     if ("healing" in hero_special and "touch" in hero_special):
         if allow_revive or new_hero_hp > 0:     #
