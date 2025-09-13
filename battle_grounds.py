@@ -42,6 +42,8 @@ def hero_special_for(hero) -> str:
         return "destroy_undead"
     if "deadly" in he and "poison" in he:
         return "deadly_poison"
+    if ("holly" in he and "might" in he):
+        return "holy_might"
     return "none"
 
 
@@ -161,6 +163,21 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             new_monster_hp = max(0, new_monster_hp - 2)
             specials_applied.append(f"Deadly Poison: monster {before}"
                                     f" → {new_monster_hp}")
+
+    # --- Holy Might: -1 armour AFTER the battle round ---
+    if hero_special == "holy_might" or ("holy" in hero_special and "might" in hero_special):
+        before_holly_might_armour = monster.armour
+        if before_holly_might_armour > 0:
+            monster.armour = before_holly_might_armour - 1
+            specials_applied.append(
+                f"Holy Might: {monster.chamption_od_darknes} armour"
+                f"dropped from {before_holly_might_armour} "
+                f" to {monster.armour} due to {hero_special}"
+                f"reducing it (-1)"
+            )
+        else:
+            specials_applied.append("Holy Might: "
+                                    "no effect (monster armour already 0)")
 
     # ===== pretty print lines =====
     lines = []
