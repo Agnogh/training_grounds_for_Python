@@ -116,7 +116,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     # Armour Shread -1 armour to hero appllied AFTER battle round
     if "armour" in monster_special and ("shread" in monster_special or "shred" in monster_special):
-        successful_hits_by_werewolf = sum(1 for net in monster_actual_damage if net > 0)
+        successful_hits_by_werewolf = sum(1 for net in monster_raw_damage if net > 0)
         if successful_hits_by_werewolf > 0:
             before_armour_shred_armour = hero.armour
             if before_armour_shred_armour > 0:
