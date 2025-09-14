@@ -83,6 +83,11 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         or ("axe" in weapon_type)
     )
 
+    ignore_armour_whip = (
+        ("ignores" in weapon_special and "armour" in weapon_special)
+        or ("whip" in weapon_type)
+        or ("lash" in weapon_type)
+    )
     # hero_strikes = max(hero_strikes, 2)
 
     # hero_strikes = 2 if ("quick" in hero_special and
@@ -121,8 +126,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     hero_actual_damage = []
     hero_cap_flags = []   # track which strikes got capped (cosmetics)
     for r in hero_raw_damage:
-        # armour first as wraight has 1 armour
-        net = max(0, r - monster.armour)
+        # for whip/lash that ignore armour
+        if ignore_armour_whip:
+            net = r
+        else:
+            # armour first as wraight has 1 armour
+            net = max(0, r - monster.armour)
         # Ghost Shield— cap per strike AFTER armour aborbs damage
         if ("ghost" in monster_special and "shield"
                 in monster_special) and net > 1:
@@ -269,7 +278,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             note = " (dual)"
 
         lines.append(
-            f"{hero.champion_of_light} {label}: {parts_for_printout} = {sum(comps)}"
+            f"{hero.champion_of_light} {label}: "
+            f"{parts_for_printout} = {sum(comps)}"
             f"with {weapon.type} ({weapon.raw_weapon_damage}) {note}"
             f"→ {monster.chamption_od_darknes} takes {net}"
             f"(armour {monster.armour})"
