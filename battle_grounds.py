@@ -76,6 +76,13 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
          and "dagger" in weapon_type)
                 )
 
+    dual_slash_axe_double_damage = (
+        # Text-based detection from Special column (Axe)
+        ("deep" in weapon_special and "slash" in weapon_special)
+        # optional safety net by name; remove if you want strict text-only
+        or ("axe" in weapon_type)
+    )
+
     # hero_strikes = max(hero_strikes, 2)
 
     # hero_strikes = 2 if ("quick" in hero_special and
@@ -91,14 +98,21 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     hero_raw_components = []
     for _ in range(hero_strikes):
+        #  # Dual Daggers (roll twice > sums up > displays as one dmg)
         if two_rolls_one_weapon:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
             b = roll_damage(weapon.damage_min, weapon.damage_max)
             hero_raw_components.append([a, b])
+        # this is for regular / normal weapon (roll once)
         else:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
-            hero_raw_components.append([a])
+            comps = [a]
+            # and for double damage like axe
+            if dual_slash_axe_double_damage:
+                comps = [a * 2]
 
+            hero_raw_components.append([a])
+    # per strkie calculations (2 +3 = 5)
     hero_raw_damage = [sum(parts) for parts in hero_raw_components]
 
     # value of damange after armour is applied -apply armour per strike
@@ -232,7 +246,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             specials_applied.append("Holy Might: "
                                     "no effect (monster armour already 0)")
 
-    if hero_strikes == 2 and not ("quick" in hero_special and "hand" in hero_special):
+    if hero_strikes == 2 and not ("quick" in hero_special
+                                  and "hand" in hero_special):
         if ("attack" in weapon_special) or ("x2" in weapon_special):
             specials_applied.append(f"{weapon.type}: attack 2 times"
                                     f"(grants +1 strike)")
