@@ -91,8 +91,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     monster_strikes = 1
 
     # raw rolls (this is just damage dealt before armour deducts it)
-    hero_raw_damage = [roll_damage(weapon.damage_min,  weapon.damage_max)
-                       for _ in range(hero_strikes)]
+    # hero_raw_damage = [roll_damage(weapon.damage_min,  weapon.damage_max)
+    # for _ in range(hero_strikes)]
     monster_raw_damage = [roll_damage(monster.damage_min, monster.damage_max)
                           for _ in range(monster_strikes)]
 
@@ -102,7 +102,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if two_rolls_one_weapon:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
             b = roll_damage(weapon.damage_min, weapon.damage_max)
-            hero_raw_components.append([a, b])
+            comps = [a, b]
+            # hero_raw_components.append([a, b])
         # this is for regular / normal weapon (roll once)
         else:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
@@ -111,9 +112,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             if dual_slash_axe_double_damage:
                 comps = [a * 2]
 
-            hero_raw_components.append([a])
+            hero_raw_components.append(comps)
     # per strkie calculations (2 +3 = 5)
-    hero_raw_damage = [sum(parts) for parts in hero_raw_components]
+    hero_raw_damage = [sum(comps) for comps in hero_raw_components]
 
     # value of damange after armour is applied -apply armour per strike
     # + with Ghost Shield
@@ -254,17 +255,24 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     # ===== pretty print lines =====
     lines = []
-    for i, (raw, net, capped) in enumerate(zip(
-        hero_raw_damage,
+    for i, (comps, net, capped) in enumerate(zip(
+        hero_raw_components,
         hero_actual_damage, hero_cap_flags),
         start=1
     ):
         label = f"strike {i}" if hero_strikes > 1 else "strike"
+        parts_for_printout = "+".join(str(x) for x in comps)
+        note = ""
+        if dual_slash_axe_double_damage and len(comps) == 1:
+            note = " (x2)"
+        elif two_rolls_one_weapon:
+            note = " (dual)"
+
         lines.append(
-            f"{hero.champion_of_light} {label}: {raw} with"
-            f"{weapon.type} ({weapon.raw_weapon_damage}) "
-            f"→ {monster.chamption_od_darknes} takes"
-            f"{net} (armour {monster.armour})"
+            f"{hero.champion_of_light} {label}: {parts_for_printout} = {sum(comps)}"
+            f"with {weapon.type} ({weapon.raw_weapon_damage}) {note}"
+            f"→ {monster.chamption_od_darknes} takes {net}"
+            f"(armour {monster.armour})"
             + (" (capped by Ghost Shield)" if capped else "")
         )
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
