@@ -88,6 +88,13 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         or ("whip" in weapon_type)
         or ("lash" in weapon_type)
     )
+
+    break_armour_hammer = (
+        ("shield" in weapon_special and "breaker" in weapon_special)
+        or ("hammer" in weapon_type)  # safety by name
+        or ("warhammer" in weapon_type)     # and in case I change the name
+        or ("sledgehammer" in weapon_type)  # and in case I change some more
+    )
     # hero_strikes = max(hero_strikes, 2)
 
     # hero_strikes = 2 if ("quick" in hero_special and
@@ -132,7 +139,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         else:
             # armour first as wraight has 1 armour
             net = max(0, r - monster.armour)
-        # Ghost Shield— cap per strike AFTER armour aborbs damage
+        # Ghost Shield— cap AFTER armour aborbsion to max 1dmg (same for Whip)
         if ("ghost" in monster_special and "shield"
                 in monster_special) and net > 1:
             net = 1
@@ -153,6 +160,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     new_hero_hp = max(0, hero_hp - dmg_to_hero)
 
     # ===== POST-ROUND (always runs, can revive if allowed) =====
+
     specials_applied = []
     # if special is equal to "drain life" and damage to hero is over 0
     # Vapire spec ability Drain life
@@ -161,6 +169,21 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if allow_revive or new_monster_hp > 0:
             new_monster_hp += 1
             specials_applied.append("Drain Life: monster +1 HP")
+
+    # Hammer/Warhammer reduce monsters armour by 1 after every battle round
+    if break_armour_hammer:
+        if monster.armour > 0:
+            before_hammer_hit = monster.armour
+            monster.armour = max(0, monster.armour - 1)
+            specials_applied.append(
+                f"{weapon.type}: -1 to monsters armour → "
+                f"destroys monsters armour from {before_hammer_hit}"
+                f" to {monster.armour}"
+            )
+        else:
+            specials_applied.append(
+                f"{weapon.type}: no effect (armour already 0)"
+            )
 
     # Zombie effect death grip
     if ("death" in monster_special and "grip" in monster_special):
