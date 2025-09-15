@@ -702,6 +702,18 @@ def load_from_gsheets():
     # I am using Key ID rather than name (CLIENT.open)
     sh = CLIENT.open_by_key(SHEET_ID)
 
+# THIS IS FOR DEBUGFOR INCREASE OF STATS
+    # one-time debug: my modifications in Sheet are not seen
+    print(f"\n[DEBUG] Using sheet id: {SHEET_ID}")
+    print("[DEBUG] Tabs:", [ws.title for ws in sh.worksheets()])
+    heroes_ws = sh.worksheet("Heroes")
+    # print("[DEBUG] Heroes!D2 raw cell value:", heroes_ws.acell("D2").value)
+    # print("[DEBUG] Heroes!B2:F2 row:", heroes_ws.get("B2:F2"))
+    # ------------------------------------------------------------------
+
+    weapons_ws = sh.worksheet("Weapons")
+    monsters_ws = sh.worksheet("Monsters")
+# THIS IS FOR DEBUGFOR INCREASE OF STATS
     heroes_ws = sh.worksheet("Heroes")
     weapons_ws = sh.worksheet("Weapons")
     monsters_ws = sh.worksheet("Monsters")
@@ -738,6 +750,14 @@ def main():
 
     heroes, weapons, monsters = load_from_gsheets()
 
+
+# --- DEBUG: verify we read HP/Armour/Special from the sheet ---
+    print("\n[DEBUG] Loaded heroes:")
+    for idx, h in enumerate(heroes, start=2):  # start=2 ≈ sheet row 2
+        print(
+            f"  Heroes!row {idx}: {h.champion_of_light}, "
+            f"HP={h.hit_points}, Armour={h.armour}, Special={h.special!r}"
+        )
 
 # choose hero now that we have aditional hero in play
     hero_names = [h.champion_of_light for h in heroes]
