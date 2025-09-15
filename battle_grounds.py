@@ -114,8 +114,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if m:
             extra_spiked_ball = parse_damage_range(m.group(0))
         else:
-            # base is 1-3, extra is 0-6
-            extra_spiked_ball = (0, weapon.damage_max * 2)
+            # Force 0–6 when no explicit range is in Special
+            extra_spiked_ball = (0, 6)
 
     # hero_strikes = max(hero_strikes, 2)
 
@@ -789,7 +789,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 """ don't need these things for confirmation
 if something works
