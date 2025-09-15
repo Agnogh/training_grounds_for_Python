@@ -114,7 +114,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if m:
             extra_spiked_ball = parse_damage_range(m.group(0))
         else:
-            # sensible fallback: if base is 1-3, extra becomes 0-6
+            # base is 1-3, extra is 0-6
             extra_spiked_ball = (0, weapon.damage_max * 2)
 
     # hero_strikes = max(hero_strikes, 2)
@@ -153,7 +153,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             if dual_slash_axe_double_damage:
                 comps = [a * 2]
 
-            hero_raw_components.append(comps)
+        hero_raw_components.append(comps)
     # per strkie calculations (2 +3 = 5)
     hero_raw_damage = [sum(comps) for comps in hero_raw_components]
 
