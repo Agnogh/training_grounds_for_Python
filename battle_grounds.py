@@ -64,6 +64,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     if ("quick" in hero_special and "hand" in hero_special):
         hero_strikes = 2
 
+    # §§§ WEAPON SPECIAL ABILITES §§§
     # 2 times string with one weapons (dual daggers)
     two_rolls_one_weapon = (
         ("attack" in weapon_special
@@ -95,6 +96,27 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         or ("warhammer" in weapon_type)     # and in case I change the name
         or ("sledgehammer" in weapon_type)  # and in case I change some more
     )
+
+    flail_with_spike_ball_on_chain = (
+        # name-based safety
+        ("flail" in weapon_type)
+        # text-based safety from Special column
+        or ("spiked" in weapon_special and "ball" in weapon_special
+            and "chain" in weapon_special)
+        # description text safety
+        or ("0-6" in weapon_special or "0–6" in weapon_special)
+    )
+
+    # read "0-6" from Special; else default to 0..(2 * weapon.damage_max)
+    extra_spiked_ball = None
+    if flail_with_spike_ball_on_chain:
+        m = re.search(r"\b\d+\s*[-–]\s*\d+\b", weapon_special or "")
+        if m:
+            extra_spiked_ball = parse_damage_range(m.group(0))
+        else:
+            # sensible fallback: if base is 1-3, extra becomes 0-6
+            extra_spiked_ball = (0, weapon.damage_max * 2)
+
     # hero_strikes = max(hero_strikes, 2)
 
     # hero_strikes = 2 if ("quick" in hero_special and
@@ -116,6 +138,13 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             b = roll_damage(weapon.damage_min, weapon.damage_max)
             comps = [a, b]
             # hero_raw_components.append([a, b])
+        # for flail + spiked ball weapon
+        elif flail_with_spike_ball_on_chain:
+            # Flail -one base roll + one extra-roll with different dmg range
+            a = roll_damage(weapon.damage_min, weapon.damage_max)
+            extra_low, extra_high = extra_spiked_ball  # from step 2
+            extra = roll_damage(extra_low, extra_high)
+            comps = [a, extra]
         # this is for regular / normal weapon (roll once)
         else:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
@@ -297,6 +326,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         note = ""
         if dual_slash_axe_double_damage and len(comps) == 1:
             note = " (x2)"
+        elif flail_with_spike_ball_on_chain:
+            note = " (spike ball on chain)"
         elif two_rolls_one_weapon:
             note = " (dual)"
 
