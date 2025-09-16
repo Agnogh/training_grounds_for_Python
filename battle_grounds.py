@@ -184,9 +184,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     dmg_to_monster = sum(hero_actual_damage)
     dmg_to_hero = sum(monster_actual_damage)
 
+    # NEED TO CHANGE THIS AS PALADIN AND VAMPIRE ARE IMMORTAL
     # HP calculations HP - damange after armour absorbtion
-    new_monster_hp = max(0, monster_hp - dmg_to_monster)
-    new_hero_hp = max(0, hero_hp - dmg_to_hero)
+    # new_monster_hp = max(0, monster_hp - dmg_to_monster)
+    # new_hero_hp = max(0, hero_hp - dmg_to_hero)
+    new_monster_hp = monster_hp - dmg_to_monster
+    new_hero_hp = hero_hp - dmg_to_hero
 
     # ===== POST-ROUND (always runs, can revive if allowed) =====
 
@@ -391,8 +394,14 @@ def battle_loop(hero, weapon, monster):
     monster_hp = monster.hit_points
 
     while True:
+        # need to get rid of this to avoid PALADIN and VAMPIRE revive
+        # hero_hp, monster_hp, rep = resolve_simultaneous_round(
+        # hero, weapon, monster, hero_hp, monster_hp, allow_revive=True,
+        # hero_max_hp=hero.hit_points,
+        # )
+        # no revives now if you dropped to 0 or below after combat round
         hero_hp, monster_hp, rep = resolve_simultaneous_round(
-            hero, weapon, monster, hero_hp, monster_hp, allow_revive=True,
+            hero, weapon, monster, hero_hp, monster_hp, allow_revive=False,
             hero_max_hp=hero.hit_points,
         )
 
