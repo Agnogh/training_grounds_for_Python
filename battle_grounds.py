@@ -202,6 +202,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             new_monster_hp += 1
             specials_applied.append("Drain Life: monster +1 HP")
 
+    # fany description regarding Whip ignoring armour
+    if ignore_armour_whip:
+        specials_applied.append(
+            f"{weapon.type}: ignores armour (monster's armour had no effect)"
+        )
+
     # Hammer/Warhammer reduce monsters armour by 1 after every battle round
     if break_armour_hammer:
         if monster.armour > 0:
