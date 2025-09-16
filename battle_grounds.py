@@ -347,6 +347,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"→ {monster.chamption_od_darknes} takes {net}"
             f"(armour {monster.armour})"
             + (" (capped by Ghost Shield)" if capped else "")
+            + (" (ignores armour)" if ignore_armour_whip else "")
         )
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
                                        monster_actual_damage), start=1):
