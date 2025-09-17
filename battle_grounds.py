@@ -336,9 +336,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
         lines.append(
             f"{hero.champion_of_light} {label}: "
-            f"{parts_for_printout} = {sum(comps)}"
-            f"with {weapon.type} ({weapon.raw_weapon_damage}) {note}"
-            f"→ {monster.chamption_od_darknes} takes {net}"
+            f"{parts_for_printout} = {sum(comps)} "
+            f"with {weapon.type} (weapon range {weapon.raw_weapon_damage}) {note}"
+            f"→ {monster.chamption_od_darknes} takes {net} "
             f"(armour {monster.armour})"
             + (" (capped by Ghost Shield)" if capped else "")
             + (" (ignores armour)" if ignore_armour_whip else "")
@@ -429,7 +429,7 @@ def battle_loop(hero, weapon, monster):
             break
 
         # for player to have option to continue or flee
-        choice = input("Press any key to continue, or 'F' to"
+        choice = input("Press any key to continue, or 'F' to "
                        "flee the battle: ").strip().lower()
         if choice == "f":
             print(stat_block("Battle", [f"{hero.champion_of_light} disengages"
