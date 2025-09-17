@@ -107,12 +107,24 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         or ("0-6" in weapon_special or "0–6" in weapon_special)
     )
 
-    # read "0-6" from Special; else default to 0..(2 * weapon.damage_max)
+    # read "0-6" from Special
     extra_spiked_ball = None
     if flail_with_spike_ball_on_chain:
-        m = re.search(r"\b\d+\s*[-–]\s*\d+\b", weapon_special or "")
-        if m:
-            extra_spiked_ball = parse_damage_range(m.group(0))
+        base_flail_damage_range = (weapon.damage_min, weapon.damage_max)
+        matches = re.findall(r"\b(\d+)\s*[-–]\s*(\d+)\b", weapon_special or "")
+        parsed = []
+        for a, b in matches:
+            low_flail_damage, high_flail_damage = int(a), int(b)
+            if low_flail_damage > high_flail_damage:
+                low_flail_damage, high_flail_damage = high_flail_damage,
+                low_flail_damage
+            parsed.append((low_flail_damage, high_flail_damage))
+        if parsed:
+            # prefer the first range that is NOT the base weapon range
+            extra_spiked_ball = next(
+                (damange_range_flail for damange_range_flail in parsed
+                 if damange_range_flail != base_flail_damage_range),
+                parsed[-1])
         else:
             # Force 0–6 when no explicit range is in Special
             extra_spiked_ball = (0, 6)
@@ -330,7 +342,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if dual_slash_axe_double_damage and len(comps) == 1:
             note = " (x2)"
         elif flail_with_spike_ball_on_chain:
-            note = "+ Spike ball on chain (weapon range 0-6)"
+            note = "+ Spiked ball on chain (weapon range"
+            "{low_flail_damage}-{high_flail_damage})"
         elif two_rolls_dual_dagger:
             note = " (dual)"
 
