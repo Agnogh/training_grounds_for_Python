@@ -330,15 +330,15 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if dual_slash_axe_double_damage and len(comps) == 1:
             note = " (x2)"
         elif flail_with_spike_ball_on_chain:
-            note = " (spike ball on chain)"
+            note = "+ Spike ball on chain (weapon range 0-6)"
         elif two_rolls_dual_dagger:
             note = " (dual)"
 
         lines.append(
             f"{hero.champion_of_light} {label}: "
             f"{parts_for_printout} = {sum(comps)} "
-            f"with {weapon.type} (weapon range {weapon.raw_weapon_damage}) {note}"
-            f"→ {monster.chamption_od_darknes} takes {net} "
+            f"with {weapon.type} (weapon range {weapon.raw_weapon_damage}) "
+            f"{note} → {monster.chamption_od_darknes} takes {net} "
             f"(armour {monster.armour})"
             + (" (capped by Ghost Shield)" if capped else "")
             + (" (ignores armour)" if ignore_armour_whip else "")
