@@ -342,8 +342,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if dual_slash_axe_double_damage and len(comps) == 1:
             note = " (x2)"
         elif flail_with_spike_ball_on_chain:
-            note = "+ Spiked ball on chain (weapon range"
-            "{low_flail_damage}-{high_flail_damage})"
+            note = f"+ Spiked ball on chain (weapon range {low_flail_damage}-"
+            f"{high_flail_damage})"
         elif two_rolls_dual_dagger:
             note = " (dual)"
 
