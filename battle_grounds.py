@@ -42,7 +42,7 @@ def hero_special_for(hero) -> str:
         return "destroy_undead"
     if "deadly" in he and "poison" in he:
         return "deadly_poison"
-    if ("holly" in he and "might" in he):
+    if "holly" in he and "might" in he:
         return "holy_might"
     return "none"
 
@@ -66,7 +66,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     # §§§ WEAPON SPECIAL ABILITES §§§
     # 2 times string with one weapons (dual daggers)
-    two_rolls_one_weapon = (
+    two_rolls_dual_dagger = (
         ("attack" in weapon_special
          and "2" in weapon_special
          and "time" in weapon_special) or
@@ -133,7 +133,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     hero_raw_components = []
     for _ in range(hero_strikes):
         #  # Dual Daggers (roll twice > sums up > displays as one dmg)
-        if two_rolls_one_weapon:
+        if two_rolls_dual_dagger:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
             b = roll_damage(weapon.damage_min, weapon.damage_max)
             comps = [a, b]
@@ -201,12 +201,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if allow_revive or new_monster_hp > 0:
             new_monster_hp += 1
             specials_applied.append("Drain Life: monster +1 HP")
-
-    # fany description regarding Whip ignoring armour
-    if ignore_armour_whip:
-        specials_applied.append(
-            f"{weapon.type}: ignores armour (monster's armour had no effect)"
-        )
 
     # Hammer/Warhammer reduce monsters armour by 1 after every battle round
     if break_armour_hammer:
@@ -337,7 +331,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             note = " (x2)"
         elif flail_with_spike_ball_on_chain:
             note = " (spike ball on chain)"
-        elif two_rolls_one_weapon:
+        elif two_rolls_dual_dagger:
             note = " (dual)"
 
         lines.append(
@@ -348,7 +342,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"(armour {monster.armour})"
             + (" (capped by Ghost Shield)" if capped else "")
             + (" (ignores armour)" if ignore_armour_whip else "")
-        )
+            )
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
                                        monster_actual_damage), start=1):
         label = f"strike {i}" if monster_strikes > 1 else "strike"
@@ -401,11 +395,6 @@ def battle_loop(hero, weapon, monster):
     monster_hp = monster.hit_points
 
     while True:
-        # need to get rid of this to avoid PALADIN and VAMPIRE revive
-        # hero_hp, monster_hp, rep = resolve_simultaneous_round(
-        # hero, weapon, monster, hero_hp, monster_hp, allow_revive=True,
-        # hero_max_hp=hero.hit_points,
-        # )
         # no revives now if you dropped to 0 or below after combat round
         hero_hp, monster_hp, rep = resolve_simultaneous_round(
             hero, weapon, monster, hero_hp, monster_hp, allow_revive=False,
@@ -439,7 +428,7 @@ def battle_loop(hero, weapon, monster):
                              ))
             break
 
-        # for player ot have option to continue or flee
+        # for player to have option to continue or flee
         choice = input("Press any key to continue, or 'F' to"
                        "flee the battle: ").strip().lower()
         if choice == "f":
@@ -460,7 +449,7 @@ class Hero_Character:
     champion_of_light: str
     armour: int
     hit_points: int
-    # (adding "Quick Hands" ability for Rogue)
+    # (spec. ability name)
     special: str = ""
     # (adding description for special ablity)
     special_desc: str = ""
@@ -499,10 +488,6 @@ CREDS = Credentials.from_service_account_file(
     )
 CLIENT = gspread.authorize(CREDS.with_scopes(SCOPE))
 
-# Quick sanity: list spreadsheets this service account can see
-# I am still getting errors so commenting this part as well
-# for f in CLIENT.list_spreadsheet_files():
-#    print("Seen by service account ->", f.get("name"), f.get("id"))
 
 # this is to use the correct ID (with the hyphen after the 1
 # I was missing all this damn time)
@@ -510,11 +495,6 @@ SHEET_ID = (
     "1-QrsVmnaWtkZMZV8pu5HJkQnQXWFyk3L"
     "PyD9UdntkLI"
 )
-
-# still getting the errors so maybe commenting this will help
-# sh = CLIENT.open_by_key(SHEET_ID)
-# print("Opened:", sh.title)
-# print("Tabs:", [ws.title for ws in sh.worksheets()])
 
 
 # Weapons and armour range and values
@@ -685,7 +665,7 @@ def read_weapons_block(ws) -> list[Weapon]:
              raw_weapon_damage=dmg_raw,
              # special ability (we are on now!!)
              special=(c or "").strip(),
-             # i case description for spec ability is added
+             # in case description for spec ability is added
              # special_desc=str(d or ""),
          ))
     return weapons
@@ -825,17 +805,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-""" don't need these things for confirmation
-if something works
-
-# Trying ot open the spreadsheet using the key
-sh = CLIENT.open_by_key(SHEET_ID)
-print("Tabs:", [ws.title for ws in sh.worksheets()])
-
-# Open Heroes tab in worksheet and read A2 only
-heroes_ws = sh.worksheet("Heroes")
-cell_value = heroes_ws.acell("A2").value
-print("Value in Heroes!A2:", cell_value)
-
-"""
