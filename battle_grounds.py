@@ -340,7 +340,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         parts_for_printout = "+".join(str(x) for x in comps)
         note = ""
         if dual_slash_axe_double_damage and len(comps) == 1:
-            note = " (x2)"
+            note = "+ (Damage multiplier x2)"
         elif flail_with_spike_ball_on_chain:
             note = f"+ Spiked ball on chain (weapon range {low_flail_damage}-"
             f"{high_flail_damage})"
@@ -353,7 +353,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"with {weapon.type} (weapon range {weapon.raw_weapon_damage}) "
             f"{note} → {monster.chamption_od_darknes} takes {net} "
             f"(armour {monster.armour})"
-            + (" (capped by Ghost Shield)" if capped else "")
+            + (f" (Capped to {net} HP damange due to Ghost Shield)"
+               if capped else f" (Ghost Shiled not activated - {net} HP"
+               f" damage done to {monster.chamption_od_darknes})")
             + (" (ignores armour)" if ignore_armour_whip else "")
             )
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
