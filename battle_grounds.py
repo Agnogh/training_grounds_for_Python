@@ -351,11 +351,11 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"{hero.champion_of_light} {label}: "
             f"{parts_for_printout} = {sum(comps)} "
             f"with {weapon.type} (weapon range {weapon.raw_weapon_damage}) "
-            f"{note} → {monster.chamption_od_darknes} takes {net} "
-            f"(armour {monster.armour})"
-            + (f" (Capped to {net} HP damange due to Ghost Shield)"
-               if capped else f" (Ghost Shiled not activated - {net} HP"
-               f" damage done to {monster.chamption_od_darknes})")
+            f"{note} → {monster.chamption_od_darknes} takes {net} HP "
+            f"damage due to {monster.chamption_od_darknes} armour "
+            f"{monster.armour}"
+            + (f" (Capped to {net} HP damage due to Ghost Shield)"
+               if capped else "")
             + (" (ignores armour)" if ignore_armour_whip else "")
             )
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
