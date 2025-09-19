@@ -161,18 +161,48 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         else:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
             comps = [a]
-            # and for double damage like axe
-            if dual_slash_axe_double_damage:
-                comps = [a * 2]
+            # and for double damage like axe - trying to imporve printpout
+            # if dual_slash_axe_double_damage:
+            #    comps = [a * 2]
 
         hero_raw_components.append(comps)
+
+    # base and total per strike (apply ×2 if hero has Axe)
+    hero_raw_totals = []
+    for comps in hero_raw_components:
+        base_damage = sum(comps)
+        total_damage = (
+            base_damage * 2
+            if dual_slash_axe_double_damage
+            else base_damage
+        )
+        hero_raw_totals.append((base_damage, total_damage))
+
     # per strkie calculations (2 +3 = 5)
-    hero_raw_damage = [sum(comps) for comps in hero_raw_components]
+    # hero_raw_damage = [sum(comps) for comps in hero_raw_components]
 
     # value of damange after armour is applied -apply armour per strike
     # + with Ghost Shield
     hero_actual_damage = []
     hero_cap_flags = []   # track which strikes got capped (cosmetics)
+    for (base_damage, total_damage) in hero_raw_totals:
+        if ignore_armour_whip:
+            net = total_damage
+        else:
+            net = max(0, total_damage - monster.armour)
+
+        capped = False
+        if (
+            "ghost" in monster_special
+            and "shield" in monster_special
+            and net > 1
+        ):
+            net = 1
+            capped = True
+
+        hero_actual_damage.append(net)
+        hero_cap_flags.append(capped)
+    """
     for r in hero_raw_damage:
         # for whip/lash that ignore armour
         if ignore_armour_whip:
@@ -188,7 +218,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         else:
             hero_cap_flags.append(False)
         hero_actual_damage.append(net)
-
+    """
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
 
@@ -241,7 +271,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         "armour" in monster_special
         and ("shread" in monster_special or "shred" in monster_special)
     ):
-        successful_hits_by_werewolf = sum(1 for net in monster_raw_damage
+        successful_hits_by_werewolf = sum(1 for net in monster_actual_damage
                                           if net > 0)
         if successful_hits_by_werewolf > 0:
             before_armour_shred_armour = hero.armour
@@ -331,14 +361,51 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     # ===== pretty print lines =====
     lines = []
-    for i, (comps, net, capped) in enumerate(zip(
-        hero_raw_components,
+    for i, ((base_damage, total_damage), comps, net, capped) in enumerate(zip(
+        hero_raw_totals, hero_raw_components,
         hero_actual_damage, hero_cap_flags),
         start=1
     ):
         label = f"strike {i}" if hero_strikes > 1 else "strike"
+        # Left-hand math display
+        if two_rolls_dual_dagger and dual_slash_axe_double_damage:
+            lhs = f"({comps[0]} + {comps[1]}) × 2 = {total_damage}"
+        elif two_rolls_dual_dagger:
+            lhs = f"{comps[0]} + {comps[1]} = {base_damage}"
+        elif dual_slash_axe_double_damage:
+            lhs = f"{base_damage} × 2 = {total_damage}"
+        else:
+            lhs = f"{base_damage}"
+
+        # Optional note about special weapon behavior
+        note = ""
+        if dual_slash_axe_double_damage and len(comps) == 1:
+            note = " + (Damage multiplier x2)"
+        elif flail_with_spike_ball_on_chain and extra_spiked_ball:
+            ex_low, ex_high = extra_spiked_ball
+            note = f" + Spiked ball on chain (extra {ex_low}-{ex_high})"
+        elif two_rolls_dual_dagger:
+            note = " (dual)"
+
+        ghost_note = " (capped by Ghost Shield)" if capped else ""
+        whip_note = " (ignores armour)" if ignore_armour_whip else ""
+
+        lines.append(
+            f"{hero.champion_of_light} {label}: {lhs} with "
+            f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
+            f"→ {monster.chamption_od_darknes} takes "
+            f"{net} (armour {monster.armour})"
+            f"{ghost_note}{whip_note}"
+        )
+        """
         parts_for_printout = "+".join(str(x) for x in comps)
         note = ""
+        if two_rolls_dual_dagger:
+            lhs = f"{comps[0]} + {comps[1]} = {base_damage}"
+        elif dual_slash_axe_double_damage:
+            lhs = f"{base_damage} × 2 = {total_damage}"
+        else:
+            lhs = f"{base_damage}"
         if dual_slash_axe_double_damage and len(comps) == 1:
             note = "+ (Damage multiplier x2)"
         elif flail_with_spike_ball_on_chain:
@@ -346,10 +413,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"{high_flail_damage})"
         elif two_rolls_dual_dagger:
             note = " (dual)"
+        """
 
+        """
         lines.append(
-            f"{hero.champion_of_light} {label}: "
-            f"{parts_for_printout} = {sum(comps)} "
+            f"{hero.champion_of_light} {label}: {lhs}"
+            f"{parts_for_printout} = total {sum(comps)} "
             f"with {weapon.type} (weapon range {weapon.raw_weapon_damage}) "
             f"{note} → {monster.chamption_od_darknes} takes {net} HP "
             f"damage due to {monster.chamption_od_darknes} armour "
@@ -358,6 +427,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                if capped else "")
             + (" (ignores armour)" if ignore_armour_whip else "")
             )
+        """
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
                                        monster_actual_damage), start=1):
         label = f"strike {i}" if monster_strikes > 1 else "strike"
@@ -393,7 +463,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         outcome = "continue"    # non of above and combat continues
 
     report = {
-        "hero_raw_total":    sum(hero_raw_damage),
+        "hero_raw_total":    sum(total for (_base, total) in hero_raw_totals),
         "hero_net_total":    dmg_to_monster,
         "monster_raw_total": sum(monster_raw_damage),
         "monster_net_total": dmg_to_hero,
