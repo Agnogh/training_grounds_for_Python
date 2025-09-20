@@ -276,9 +276,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             if before_armour_shred_armour > 0:
                 hero.armour = before_armour_shred_armour - 1
                 specials_applied.append(
-                    f"Armor Shred: {hero.champion_of_light} armour"
+                    f"Armor Shred: {hero.champion_of_light} armour "
                     f"dropped from {before_armour_shred_armour} "
-                    f" to {hero.armour} due to {monster_special}"
+                    f"to {hero.armour} due to {monster_special}"
                     f"reducing it (-1)"
                 )
             else:
@@ -381,7 +381,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             extra_lo, extra_hi = extra_spiked_ball
             note = f" + Spiked ball (extra {extra_lo}-{extra_hi})"
         elif two_rolls_dual_dagger and len(comps) == 2:
-            note = " (dual)"
+            note = " (2 daggers stab)"
         elif dual_slash_axe_double_damage:
             note = " + (Damage multiplier x2)"
 
@@ -390,12 +390,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         #  whip_note = " (ignores armour)" if ignore_armour_whip else ""
 
         lines.append(
-            f"{hero.champion_of_light} {label}: {lhs} with "
+            f"{hero.champion_of_light} {label}: {lhs} damage with "
             f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
             f"→ {monster.chamption_od_darknes} takes "
-            f"{net} (armour {monster.armour})"
-            + (" (capped by Ghost Shield)" if capped else "")
-            + (" (ignores armour)" if ignore_armour_whip else "")
+            f"{net} damage due to armour {monster.armour}"
+            + (" (Damage capped to 1HP due to Ghost Shield)" if capped else "")
+            + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
         )
         """
         parts_for_printout = "+".join(str(x) for x in comps)
@@ -433,8 +433,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         label = f"strike {i}" if monster_strikes > 1 else "strike"
         lines.append(
             f"{monster.chamption_od_darknes} {label}:"
-            f"{raw} ({monster.raw_moster_damage}) "
-            f"→ {hero.champion_of_light} takes {net} (armour {hero.armour})"
+            f" {raw} damange (weapon range {monster.raw_moster_damage})"
+            f" → {hero.champion_of_light} takes {net} due to "
+            f"armour {hero.armour}"
         )
 
     lines += [
@@ -499,17 +500,27 @@ def battle_loop(hero, weapon, monster):
             break
         elif rep["outcome"] == "monster_defeated":
             print(stat_block("Battle result",
-                             [f"{monster.chamption_od_darknes}"
-                              f" is defeated! \n"
-                              f"{hero.champion_of_light}"
-                              f"slayed the servant of darkness!"]
+                             [
+                                 f"{monster.chamption_od_darknes}"
+                                 f" is defeated!"
+                             ]
+                             +
+                             [
+                                 f"{hero.champion_of_light}"
+                                 f" slayed the servant of darkness!"
+                             ]
                              ))
             break
         elif rep["outcome"] == "hero_defeated":
             print(stat_block("Battle result",
-                             [f"{hero.champion_of_light} is defeated! "
-                              f"{monster.chamption_od_darknes}"
-                              f" stands on top of broken body of your hero"]
+                             [
+                                 f"{hero.champion_of_light} is defeated!"
+                             ]
+                             +
+                             [
+                                 f"{monster.chamption_od_darknes}"
+                                 f" stands on top of broken body of your hero!"
+                             ]
                              ))
             break
 
