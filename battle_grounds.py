@@ -172,9 +172,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     for comps in hero_raw_components:
         base_damage = sum(comps)
         total_damage = (
-            base_damage * 2
-            if dual_slash_axe_double_damage
-            else base_damage
+            base_damage * 2 if dual_slash_axe_double_damage else base_damage
         )
         hero_raw_totals.append((base_damage, total_damage))
 
