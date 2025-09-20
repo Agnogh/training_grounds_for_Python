@@ -53,7 +53,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                # need to add this for top limit of HP
                                hero_max_hp: int | None = None,
                                ):
-    # trying to apply normalization
+    # Applying normalization
     hero_special = _norm(getattr(hero, "special", ""))
     monster_special = _norm(getattr(monster, "special", ""))
     weapon_special = _norm(getattr(weapon, "special", ""))
@@ -129,16 +129,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             # Force 0–6 when no explicit range is in Special
             extra_spiked_ball = (0, 6)
 
-    # hero_strikes = max(hero_strikes, 2)
-
-    # hero_strikes = 2 if ("quick" in hero_special and
-    #                      "hand" in hero_special) else 1
-    # for now I am nto planing to create monster that atatcks 2 times
+    # for now I am not planing to create monster that atatcks 2 times
     monster_strikes = 1
 
     # raw rolls (this is just damage dealt before armour deducts it)
-    # hero_raw_damage = [roll_damage(weapon.damage_min,  weapon.damage_max)
-    # for _ in range(hero_strikes)]
     monster_raw_damage = [roll_damage(monster.damage_min, monster.damage_max)
                           for _ in range(monster_strikes)]
 
@@ -149,7 +143,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             a = roll_damage(weapon.damage_min, weapon.damage_max)
             b = roll_damage(weapon.damage_min, weapon.damage_max)
             comps = [a, b]
-            # hero_raw_components.append([a, b])
         # for flail + spiked ball weapon
         elif flail_with_spike_ball_on_chain:
             # Flail -one base roll + one extra-roll with different dmg range
@@ -161,9 +154,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         else:
             a = roll_damage(weapon.damage_min, weapon.damage_max)
             comps = [a]
-            # and for double damage like axe - trying to imporve printpout
-            # if dual_slash_axe_double_damage:
-            #    comps = [a * 2]
 
         hero_raw_components.append(comps)
 
@@ -175,9 +165,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             base_damage * 2 if dual_slash_axe_double_damage else base_damage
         )
         hero_raw_totals.append((base_damage, total_damage))
-
-    # per strkie calculations (2 +3 = 5)
-    # hero_raw_damage = [sum(comps) for comps in hero_raw_components]
 
     # value of damange after armour is applied -apply armour per strike
     # + with Ghost Shield
@@ -200,23 +187,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
         hero_actual_damage.append(net)
         hero_cap_flags.append(capped)
-    """
-    for r in hero_raw_damage:
-        # for whip/lash that ignore armour
-        if ignore_armour_whip:
-            net = r
-        else:
-            # armour first as wraight has 1 armour
-            net = max(0, r - monster.armour)
-        # Ghost Shield— cap AFTER armour aborbsion to max 1dmg (same for Whip)
-        if ("ghost" in monster_special and "shield"
-                in monster_special) and net > 1:
-            net = 1
-            hero_cap_flags.append(True)
-        else:
-            hero_cap_flags.append(False)
-        hero_actual_damage.append(net)
-    """
+
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
 
@@ -224,10 +195,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     dmg_to_monster = sum(hero_actual_damage)
     dmg_to_hero = sum(monster_actual_damage)
 
-    # NEED TO CHANGE THIS AS PALADIN AND VAMPIRE ARE IMMORTAL
-    # HP calculations HP - damange after armour absorbtion
-    # new_monster_hp = max(0, monster_hp - dmg_to_monster)
-    # new_hero_hp = max(0, hero_hp - dmg_to_hero)
+    # HitPoints calculation heor/monster
     new_monster_hp = monster_hp - dmg_to_monster
     new_hero_hp = hero_hp - dmg_to_hero
 
@@ -397,37 +365,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             + (" (Damage capped to 1HP due to Ghost Shield)" if capped else "")
             + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
         )
-        """
-        parts_for_printout = "+".join(str(x) for x in comps)
-        note = ""
-        if two_rolls_dual_dagger:
-            lhs = f"{comps[0]} + {comps[1]} = {base_damage}"
-        elif dual_slash_axe_double_damage:
-            lhs = f"{base_damage} × 2 = {total_damage}"
-        else:
-            lhs = f"{base_damage}"
-        if dual_slash_axe_double_damage and len(comps) == 1:
-            note = "+ (Damage multiplier x2)"
-        elif flail_with_spike_ball_on_chain:
-            note = f"+ Spiked ball on chain (weapon range {low_flail_damage}-"
-            f"{high_flail_damage})"
-        elif two_rolls_dual_dagger:
-            note = " (dual)"
-        """
 
-        """
-        lines.append(
-            f"{hero.champion_of_light} {label}: {lhs}"
-            f"{parts_for_printout} = total {sum(comps)} "
-            f"with {weapon.type} (weapon range {weapon.raw_weapon_damage}) "
-            f"{note} → {monster.chamption_od_darknes} takes {net} HP "
-            f"damage due to {monster.chamption_od_darknes} armour "
-            f"{monster.armour}"
-            + (f" (Capped to {net} HP damage due to Ghost Shield)"
-               if capped else "")
-            + (" (ignores armour)" if ignore_armour_whip else "")
-            )
-        """
     for i, (raw, net) in enumerate(zip(monster_raw_damage,
                                        monster_actual_damage), start=1):
         label = f"strike {i}" if monster_strikes > 1 else "strike"
@@ -528,8 +466,18 @@ def battle_loop(hero, weapon, monster):
         choice = input("Press any key to continue, or 'F' to "
                        "flee the battle: ").strip().lower()
         if choice == "f":
-            print(stat_block("Battle", [f"{hero.champion_of_light} disengages"
-                                        f" and flees from battlefield."]))
+            print(stat_block(
+                "Battle",
+                [
+                    f"{hero.champion_of_light} disengages"
+                    f" and flee from battlefield. "
+                ]
+                +
+                [
+                    f"{monster.chamption_od_darknes} is too"
+                    f" powerfull for our hero."
+                ],
+            ))
             break
 
         round_no += 1
