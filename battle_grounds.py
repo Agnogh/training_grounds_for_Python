@@ -366,34 +366,36 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     ):
         label = f"strike {i}" if hero_strikes > 1 else "strike"
         # Left-hand math display
-        if two_rolls_dual_dagger and dual_slash_axe_double_damage:
-            lhs = f"({comps[0]} + {comps[1]}) × 2 = {total_damage}"
-        elif two_rolls_dual_dagger:
+        if len(comps) == 2:
             lhs = f"{comps[0]} + {comps[1]} = {base_damage}"
-        elif dual_slash_axe_double_damage:
-            lhs = f"{base_damage} × 2 = {total_damage}"
         else:
             lhs = f"{base_damage}"
 
+        # Axe (×2 damange) appends multiplier part
+        if dual_slash_axe_double_damage:
+            lhs = f"{lhs} × 2 = {total_damage}"
+
         # Optional note about special weapon behavior
         note = ""
-        if dual_slash_axe_double_damage and len(comps) == 1:
-            note = " + (Damage multiplier x2)"
-        elif flail_with_spike_ball_on_chain and extra_spiked_ball:
-            ex_low, ex_high = extra_spiked_ball
-            note = f" + Spiked ball on chain (extra {ex_low}-{ex_high})"
-        elif two_rolls_dual_dagger:
+        if flail_with_spike_ball_on_chain and extra_spiked_ball:
+            extra_lo, extra_hi = extra_spiked_ball
+            note = f" + Spiked ball (extra {extra_lo}-{extra_hi})"
+        elif two_rolls_dual_dagger and len(comps) == 2:
             note = " (dual)"
+        elif dual_slash_axe_double_damage:
+            note = " + (Damage multiplier x2)"
 
-        ghost_note = " (capped by Ghost Shield)" if capped else ""
-        whip_note = " (ignores armour)" if ignore_armour_whip else ""
+        # If I ever want to use variables over hardcoded text
+        # ghost_note = " (capped by Ghost Shield)" if capped else ""
+        #  whip_note = " (ignores armour)" if ignore_armour_whip else ""
 
         lines.append(
             f"{hero.champion_of_light} {label}: {lhs} with "
             f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
             f"→ {monster.chamption_od_darknes} takes "
             f"{net} (armour {monster.armour})"
-            f"{ghost_note}{whip_note}"
+            + (" (capped by Ghost Shield)" if capped else "")
+            + (" (ignores armour)" if ignore_armour_whip else "")
         )
         """
         parts_for_printout = "+".join(str(x) for x in comps)
