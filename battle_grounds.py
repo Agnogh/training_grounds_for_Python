@@ -500,16 +500,16 @@ def battle_loop(hero, weapon, monster):
         elif rep["outcome"] == "monster_defeated":
             print(stat_block("Battle result",
                              [f"{monster.chamption_od_darknes}"
-                              f"is defeated!"
+                              f" is defeated! \n"
                               f"{hero.champion_of_light}"
-                              f"slayed the servent of dark!"]
+                              f"slayed the servant of darkness!"]
                              ))
             break
         elif rep["outcome"] == "hero_defeated":
             print(stat_block("Battle result",
-                             [f"{hero.champion_of_light} is defeated!"
+                             [f"{hero.champion_of_light} is defeated! "
                               f"{monster.chamption_od_darknes}"
-                              f"has defeated hero"]
+                              f" stands on top of broken body of your hero"]
                              ))
             break
 
@@ -518,7 +518,7 @@ def battle_loop(hero, weapon, monster):
                        "flee the battle: ").strip().lower()
         if choice == "f":
             print(stat_block("Battle", [f"{hero.champion_of_light} disengages"
-                                        f"and flees."]))
+                                        f" and flees from battlefield."]))
             break
 
         round_no += 1
@@ -827,7 +827,7 @@ def load_from_gsheets():
 
 
 def main():
-    print("Welcome to battl")
+    print("Welcome to battle")
 
     heroes, weapons, monsters = load_from_gsheets()
 
