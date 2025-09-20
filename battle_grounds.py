@@ -752,6 +752,9 @@ def ensure_combat_ws(sh):
     """Get or create the 'Combat' sheet and write the header."""
     try:
         combat_ws = sh.worksheet("Combat")
+        # This is not to touch existing data
+        # Thank you Alvaro Fillipe from Stack
+        return combat_ws
     except gspread.exceptions.WorksheetNotFound:
         combat_ws = sh.add_worksheet(title="Combat", rows=200, cols=11)
 
@@ -772,18 +775,69 @@ def ensure_combat_ws(sh):
     combat_ws.update(values=[header], range_name="A1:K1")
     return combat_ws
 
-
+    """
 def write_combat_rows(combat_ws, rows):
+    """
     """
     Clear old rows and write all battle rows in one go to reduce API calls
     so i do not end up with error messages for too frequant calls
     Rows must be lists of length 11 (A - K)
+    """
+
     """
     # Clear everything below header
     combat_ws.resize(rows=2)            # keep it small briefly (optional)
     combat_ws.resize(rows=max(2, len(rows) + 1))
     if rows:
         combat_ws.update(values=rows, range_name=f"A2:K{len(rows)+1}")
+    """
+    """
+    # Detect if there are previous battles (any data under header)
+    has_previous_battles = bool(combat_ws.acell("A2").value)
+
+    batch = []
+    if add_separator and has_previous_battles:
+        # dashed separator across all 11 columns, or a blank row
+        sep = (["────────"] * 11) if use_dash_line else ([""] * 11)
+        batch.append(sep)
+
+    batch.extend(rows)
+
+    # Append in one shot (newer gspread). Fallback to append_row for older versions.
+    try:
+        combat_ws.append_rows(batch, value_input_option="USER_ENTERED")
+    except AttributeError:
+        for r in batch:
+            combat_ws.append_row(r, value_input_option="USER_ENTERED")
+    """
+
+    # this better work Alvaro
+
+
+def write_combat_rows(combat_ws, rows, add_separator=True, use_dash_line=True):
+    """
+    Append battle's rows to the bottom of the 'Combat' sheet.
+    """
+    if not rows:
+        return
+
+    # to detect if there is anything under header
+    has_previous_battles = bool(combat_ws.acell("A2").value)
+
+    batch = []
+    if add_separator and has_previous_battles:
+        # put dashed across all 11 columns, or leave blank (fallback safety)
+        sep = (["────────"] * 11) if use_dash_line else ([""] * 11)
+        batch.append(sep)
+
+    batch.extend(rows)
+
+    # Append in one shot (newer gspread). Fallback to append_row (older vers)
+    try:
+        combat_ws.append_rows(batch, value_input_option="USER_ENTERED")
+    except AttributeError:
+        for r in batch:
+            combat_ws.append_row(r, value_input_option="USER_ENTERED")
 
 # things (heroes, vilins, weapons) to
 #  load from Google Sheets
