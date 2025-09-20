@@ -413,7 +413,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     return new_hero_hp, new_monster_hp, report
 
 
-def battle_loop(hero, weapon, monster):
+def battle_loop(hero, weapon, monster, combat_rows):
     round_no = 1
     hero_hp = hero.hit_points
     monster_hp = monster.hit_points
@@ -428,6 +428,21 @@ def battle_loop(hero, weapon, monster):
         # Show what happened current round
         print()
         print(stat_block(f"Battle round {round_no}", rep["lines"]))
+
+        # Log this round into the combat log
+        combat_rows.append([
+            rep["hero_raw_total"],      # damage done (pre-armour) by hero
+            rep["hero_net_total"],      # Damage inflicted to monster after arm
+            rep["monster_raw_total"],  # damage received by hero raw before arm
+            rep["monster_net_total"],  # actual damage taken by hero after amr
+            hero.special or "—",        # Hero ability (just text for nwo)
+            monster.special or "—",     # Monster ability (just text)
+            weapon.special or "—",      # Weapon ability (just text)
+            hero.armour,        # log Hero armour after effects
+            monster.armour,     # log armour Monster after all effects
+            hero_hp,        # log Hero HP at hte end of battle round
+            monster_hp,         # log Monster HP end of round
+        ])
 
         # Outcome banner for good win, bad win and both kill
         if rep["outcome"] == "double_ko":
@@ -733,6 +748,43 @@ def coerce_int_strict(val, label):
     raise ValueError(f"{label} must be a single number, got {val!r}")
 
 
+def ensure_combat_ws(sh):
+    """Get or create the 'Combat' sheet and write the header."""
+    try:
+        combat_ws = sh.worksheet("Combat")
+    except gspread.exceptions.WorksheetNotFound:
+        combat_ws = sh.add_worksheet(title="Combat", rows=200, cols=11)
+
+    # Combat headers (A1-K1)
+    header = [
+        "Damage done",      # hero raw pre-armour absorption (weapon mult inc)
+        "Damage inflicted",     # hero damage after armour absorption
+        "Damage received",  # monster raw damage done pre-armour absorption
+        "Damage taken",     # monster net dmg to hero (after armour absorption)
+        "Hero ability",     # shonw as text (expanstion possible later)
+        "Monster ability",      # shown as text
+        "Weapon ability",       # shown as text for now
+        "Armour Hero",      # after post-round effects - end of the round
+        "Armour Monster",   # after post-round effects -end of battle round
+        "Hero HP",          # end-of-round at the end of the round
+        "Monster HP",       # after regular and special take effect
+    ]
+    combat_ws.update(values=[header], range_name="A1:K1")
+    return combat_ws
+
+
+def write_combat_rows(combat_ws, rows):
+    """
+    Clear old rows and write all battle rows in one go to reduce API calls
+    so i do not end up with error messages for too frequant calls
+    Rows must be lists of length 11 (A - K)
+    """
+    # Clear everything below header
+    combat_ws.resize(rows=2)            # keep it small briefly (optional)
+    combat_ws.resize(rows=max(2, len(rows) + 1))
+    if rows:
+        combat_ws.update(values=rows, range_name=f"A2:K{len(rows)+1}")
+
 # things (heroes, vilins, weapons) to
 #  load from Google Sheets
 # =========================
@@ -842,9 +894,32 @@ def main():
         ],
     ))
 
+    # Prepare in-memory combat log and Round 0 (starting values)
+    combat_rows = []
+    combat_rows.append([
+        0,      # Damage done
+        0,      # Damage inflicted
+        0,      # Damage received
+        0,      # Damage taken
+        hero.special or "—",        # Hero ability (just text)
+        monster.special or "—",     # Monster ability (jsut text)
+        weapon.special or "—",      # Weapon ability (just text)
+        hero.armour,        # Armour Hero (starting value)
+        monster.armour,     # Armour Monster (starting value)
+        hero.hit_points,        # Hero HP (starting value)
+        monster.hit_points,     # Monster HP (starting value)
+    ])
+
     # --- Multi-round battle until defeat or flee ---
     final_hero_hp, final_monster_hp, outcome = battle_loop(hero,
-                                                           weapon, monster)
+                                                           weapon, monster,
+                                                           combat_rows)
+
+    # Flush the combat log to the "Combat" sheet in one go
+    sh = CLIENT.open_by_key(SHEET_ID)      # safe: one extra open per run
+    combat_ws = ensure_combat_ws(sh)
+    write_combat_rows(combat_ws, combat_rows)
+    print("\n[Log] Wrote combat log to 'Combat' sheet.")
 
 
 if __name__ == "__main__":
