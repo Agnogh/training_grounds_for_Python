@@ -382,7 +382,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"{hero.champion_of_light} {label}: {lhs} damage with "
             f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
             f"→ {monster.chamption_od_darknes} takes "
-            f"{net} {monster.armour}"
+            f"{net} damange due to {monster.armour}"
             + (" (Damage capped to 1HP due to Ghost Shield)" if capped else "")
             + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
         )
@@ -955,7 +955,7 @@ def main():
 
     print(stat_block(
         f"Weapon: {weapon.type}",
-        [f"Damage: {weapon.raw_weapon_damage} (parsed"
+        [f"Damage: {weapon.raw_weapon_damage} (parsed "
          f"{weapon.damage_min}-{weapon.damage_max})"],
     ))
     print(stat_block(
