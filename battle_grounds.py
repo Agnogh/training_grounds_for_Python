@@ -208,7 +208,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             monster_special) and dmg_to_hero > 0:
         if allow_revive or new_monster_hp > 0:
             new_monster_hp += 1
-            specials_applied.append("Drain Life: monster +1 HP")
+            specials_applied.append(
+                f"Drain Life: {monster.chamption_od_darknes} +1 HP")
 
     # Hammer/Warhammer reduce monsters armour by 1 after every battle round
     if break_armour_hammer:
@@ -216,9 +217,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             before_hammer_hit = monster.armour
             monster.armour = max(0, monster.armour - 1)
             specials_applied.append(
-                f"{weapon.type}: -1 to monsters armour → "
-                f"destroys monsters armour from {before_hammer_hit}"
-                f" to {monster.armour}"
+                f"{weapon.type}: -1 to {monster.chamption_od_darknes} armour"
+                f" → destroys monsters armour from "
+                f"{before_hammer_hit} to {monster.armour}"
             )
         else:
             specials_applied.append(
@@ -229,8 +230,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     if ("death" in monster_special and "grip" in monster_special):
         before_deth_grip = new_hero_hp
         new_hero_hp = max(0, new_hero_hp - 1)
-        specials_applied.append(f"Death Grip: hero {before_deth_grip}"
-                                f" → {new_hero_hp}")
+        specials_applied.append(f"Death Grip: {hero.champion_of_light}"
+                                f" dropped from {before_deth_grip} HP"
+                                f" to → {new_hero_hp} HP.")
 
     # Armour Shread -1 armour to hero appllied AFTER battle round
     if (
@@ -247,11 +249,13 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                     f"Armor Shred: {hero.champion_of_light} armour "
                     f"dropped from {before_armour_shred_armour} "
                     f"to {hero.armour} due to {monster_special}"
-                    f"reducing it (-1)"
+                    f"reducing it (-1)."
                 )
             else:
-                specials_applied.append("Armour Shred: "
-                                        "no effect (Hero armour already 0)")
+                specials_applied.append(
+                    f"Armour Shred: no effect, {hero.champion_of_light} "
+                    f" armour is already at {hero.armour}! "
+                    )
 
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
     if ("healing" in hero_special and "touch" in hero_special):
@@ -263,9 +267,14 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             gain = hp_after_healing - new_hero_hp
             if gain > 0:        # if there was increase of HP
                 new_hero_hp = hp_after_healing
-                specials_applied.append("Healing Touch: hero +1 HP")
+                specials_applied.append(
+                    f"Healing Touch: {hero.champion_of_light} healed"
+                    f" themselves for +1 HP putting them on "
+                    f"{hp_after_healing}")
             else:       # if hero is at full health trigger following
-                specials_applied.append("Healing Touch: no effect-max HP)")
+                specials_applied.append(
+                    f"Healing Touch: no effect. {hero.champion_of_light}"
+                    f" is at {hero_max_hp} HP)")
 
     # Druid special ability "Thornes shield" and formated description steing
     if ("thorns" in hero_special and "shield" in
@@ -274,16 +283,19 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         #                                for raw in monster_raw_damage)
         before = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
-        specials_applied.append(f"Thorns Shield: monster"
-                                f"{before} → {new_monster_hp}")
+        specials_applied.append(
+            f"Thorns Shield: {monster.chamption_od_darknes} "
+            f"dropped from {before} HP to "
+            f"{new_monster_hp}")
 
     # Mage special ability "fireball" and formated description steing
     if "fireball" in hero_special:
         before_fireball = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(
-            f"Fireball effect does fire damage to monster causing it"
-            f"to drop HP from {before_fireball} to {new_monster_hp}"
+            f"Fireball effect from {hero.champion_of_light} does fire "
+            f"damage to {monster.chamption_od_darknes}, causing "
+            f"it do drop HP from {before_fireball} to {new_monster_hp}"
         )
 
     # Crusader special ability "destroy undead" and formated description steing
@@ -291,8 +303,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         before_destroy_undead = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(
-            f"Crusader cast Destroy undead and reduced monsters"
-            f"HP from {before_destroy_undead} to {new_monster_hp}"
+            f"{hero.champion_of_light} cast Destroy undead and reduced "
+            f"{monster.chamption_od_darknes} HP from "
+            f"{before_destroy_undead} to {new_monster_hp}"
         )
 
     # Assassin special ability "deadly poison" if armour was penetrated
@@ -300,8 +313,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if any(net > 0 for net in hero_actual_damage):
             before = new_monster_hp
             new_monster_hp = max(0, new_monster_hp - 2)
-            specials_applied.append(f"Deadly Poison: monster {before}"
-                                    f" → {new_monster_hp}")
+            specials_applied.append(
+                f"Deadly Poison: {monster.chamption_od_darknes} "
+                f"got reduced from {before} HP to {new_monster_hp}"
+                f" due to {hero.champion_of_light} special skill "
+                f"{hero_special}"
+                                )
 
     # --- Holy Might: -1 armour AFTER the battle round ---
     if "might" in hero_special and ("holly" in hero_special
@@ -316,8 +333,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 f"reducing it (-1)"
             )
         else:
-            specials_applied.append("Holy Might: "
-                                    "no effect (monster armour already 0)")
+            specials_applied.append(
+                f"Holy Might: no effect ({monster.chamption_od_darknes}"
+                f" armour is already at {monster.armour}."
+                )
 
     if hero_strikes == 2 and not ("quick" in hero_special
                                   and "hand" in hero_special):
@@ -388,7 +407,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         lines += [
             f"[After effects] {hero.champion_of_light} HP = {new_hero_hp}",
             f"[After effects] {monster.chamption_od_darknes}"
-            f"HP = {new_monster_hp}",
+            f" HP = {new_monster_hp}",
         ]
 
     # final outcome after everything (battle rounds & effect of spec. ability)
