@@ -122,8 +122,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if parsed:
             # prefer the first range that is NOT the base weapon range
             extra_spiked_ball = next(
-                (damange_range_flail for damange_range_flail in parsed
-                 if damange_range_flail != base_flail_damage_range),
+                (damage_range_flail for damage_range_flail in parsed
+                 if damage_range_flail != base_flail_damage_range),
                 parsed[-1])
         else:
             # Force 0–6 when no explicit range is in Special
@@ -209,7 +209,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if allow_revive or new_monster_hp > 0:
             new_monster_hp += 1
             specials_applied.append(
-                f"Drain Life: {monster.chamption_od_darknes} +1 HP")
+                f"Drain Life: {monster.chamption_od_darknes} "
+                f"drains {hero.champion_of_light} and "
+                f"regerates itself for 1 HP")
 
     # Hammer/Warhammer reduce monsters armour by 1 after every battle round
     if break_armour_hammer:
@@ -249,7 +251,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                     f"Armor Shred: {hero.champion_of_light} armour "
                     f"dropped from {before_armour_shred_armour} "
                     f"to {hero.armour} due to {monster_special}"
-                    f"reducing it (-1)."
+                    f" reducing it (-1)."
                 )
             else:
                 specials_applied.append(
@@ -316,7 +318,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             specials_applied.append(
                 f"Deadly Poison: {monster.chamption_od_darknes} "
                 f"got reduced from {before} HP to {new_monster_hp}"
-                f" due to {hero.champion_of_light} special skill "
+                f" HP due to {hero.champion_of_light} special skill "
                 f"{hero_special}"
                                 )
 
@@ -334,7 +336,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             )
         else:
             specials_applied.append(
-                f"Holy Might: no effect ({monster.chamption_od_darknes}"
+                f"Holy Might: no effect {monster.chamption_od_darknes}"
                 f" armour is already at {monster.armour}."
                 )
 
@@ -380,7 +382,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"{hero.champion_of_light} {label}: {lhs} damage with "
             f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
             f"→ {monster.chamption_od_darknes} takes "
-            f"{net} damage due to armour {monster.armour}"
+            f"{net} {monster.armour}"
             + (" (Damage capped to 1HP due to Ghost Shield)" if capped else "")
             + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
         )
@@ -390,7 +392,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         label = f"strike {i}" if monster_strikes > 1 else "strike"
         lines.append(
             f"{monster.chamption_od_darknes} {label}:"
-            f" {raw} damange (weapon range {monster.raw_moster_damage})"
+            f" {raw} damage (weapon range {monster.raw_moster_damage})"
             f" → {hero.champion_of_light} takes {net} due to "
             f"armour {hero.armour}"
         )
