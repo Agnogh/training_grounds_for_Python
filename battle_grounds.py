@@ -199,6 +199,12 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     new_monster_hp = monster_hp - dmg_to_monster
     new_hero_hp = hero_hp - dmg_to_hero
 
+    # Snapshots / cpilboard / temp save for display armour used during strikes
+    # amount that strike from Hero had to go through
+    monster_armour_during_hero_attack = monster.armour
+    # amount of hero amrour that monstr's attack had to go through
+    hero_armour_during_monster_attack = hero.armour
+
     # ===== POST-ROUND (always runs, can revive if allowed) =====
 
     specials_applied = []
@@ -248,7 +254,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             if before_armour_shred_armour > 0:
                 hero.armour = before_armour_shred_armour - 1
                 specials_applied.append(
-                    f"Armour Shred: {hero.champion_of_light} armour "
+                    f"Shread Armour: {hero.champion_of_light} armour "
                     f"dropped from {before_armour_shred_armour} "
                     f"to {hero.armour} due to {monster_special}"
                     f" reducing it (-1)."
@@ -382,7 +388,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"{hero.champion_of_light} {label}: {lhs} damage with "
             f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
             f"→ {monster.chamption_od_darknes} takes "
-            f"{net} damage due to armour {monster.armour}"
+            f"{net} damage due to armour {monster_armour_during_hero_attack}"
             + (" (Damage capped to 1HP due to Ghost Shield)" if capped else "")
             + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
         )
@@ -394,7 +400,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"{monster.chamption_od_darknes} {label}:"
             f" {raw} damage (weapon range {monster.raw_moster_damage})"
             f" → {hero.champion_of_light} takes {net} damage due to"
-            f" armour {hero.armour}"
+            f" armour {hero_armour_during_monster_attack}"
         )
 
     lines += [
