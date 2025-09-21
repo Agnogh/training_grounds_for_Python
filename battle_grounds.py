@@ -166,7 +166,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         )
         hero_raw_totals.append((base_damage, total_damage))
 
-    # value of damange after armour is applied -apply armour per strike
+    # value of damage after armour is applied -apply armour per strike
     # + with Ghost Shield
     hero_actual_damage = []
     hero_cap_flags = []   # track which strikes got capped (cosmetics)
@@ -220,7 +220,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             monster.armour = max(0, monster.armour - 1)
             specials_applied.append(
                 f"{weapon.type}: -1 to {monster.chamption_od_darknes} armour"
-                f" → destroys monsters armour from "
+                f" → destroys the monster's armour from "
                 f"{before_hammer_hit} to {monster.armour}"
             )
         else:
@@ -360,7 +360,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         else:
             lhs = f"{base_damage}"
 
-        # Axe (×2 damange) appends multiplier part
+        # Axe (×2 damage) appends multiplier part
         if dual_slash_axe_double_damage:
             lhs = f"{lhs} × 2 = {total_damage}"
 
@@ -382,7 +382,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             f"{hero.champion_of_light} {label}: {lhs} damage with "
             f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
             f"→ {monster.chamption_od_darknes} takes "
-            f"{net} damange due to {monster.armour}"
+            f"{net} damage due to armour {monster.armour}"
             + (" (Damage capped to 1HP due to Ghost Shield)" if capped else "")
             + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
         )
@@ -393,8 +393,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         lines.append(
             f"{monster.chamption_od_darknes} {label}:"
             f" {raw} damage (weapon range {monster.raw_moster_damage})"
-            f" → {hero.champion_of_light} takes {net} due to "
-            f"armour {hero.armour}"
+            f" → {hero.champion_of_light} takes {net} damage due to"
+            f" armour {hero.armour}"
         )
 
     lines += [
@@ -493,7 +493,8 @@ def battle_loop(hero, weapon, monster, combat_rows):
                              +
                              [
                                  f"{monster.chamption_od_darknes}"
-                                 f" stands on top of broken body of your hero!"
+                                 f" stands on top of the broken"
+                                 f" body of your hero!"
                              ]
                              ))
             break
