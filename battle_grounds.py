@@ -248,7 +248,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             if before_armour_shred_armour > 0:
                 hero.armour = before_armour_shred_armour - 1
                 specials_applied.append(
-                    f"Armor Shred: {hero.champion_of_light} armour "
+                    f"Armour Shred: {hero.champion_of_light} armour "
                     f"dropped from {before_armour_shred_armour} "
                     f"to {hero.armour} due to {monster_special}"
                     f" reducing it (-1)."
@@ -512,7 +512,7 @@ def battle_loop(hero, weapon, monster, combat_rows):
                 +
                 [
                     f"{monster.chamption_od_darknes} is too"
-                    f" powerfull for our hero."
+                    f" powerful for our hero."
                 ],
             ))
             break
