@@ -240,7 +240,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         new_hero_hp = max(0, new_hero_hp - 1)
         specials_applied.append(f"Death Grip: {hero.champion_of_light}"
                                 f" dropped from {before_deth_grip} HP"
-                                f" to → {new_hero_hp} HP.")
+                                f" to {new_hero_hp} HP.")
 
     # Armour Shread -1 armour to hero appllied AFTER battle round
     if (
@@ -254,7 +254,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             if before_armour_shred_armour > 0:
                 hero.armour = before_armour_shred_armour - 1
                 specials_applied.append(
-                    f"Shread Armour: {hero.champion_of_light} armour "
+                    f"Armour Shread: {hero.champion_of_light} armour "
                     f"dropped from {before_armour_shred_armour} "
                     f"to {hero.armour} due to {monster_special}"
                     f" reducing it (-1)."
@@ -262,7 +262,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             else:
                 specials_applied.append(
                     f"Armour Shred: no effect, {hero.champion_of_light} "
-                    f" armour is already at {hero.armour}! "
+                    f"armour is already at {hero.armour}! "
                     )
 
     # if hero ability "Healing Touch" exist (+1 HP, capped at max)
@@ -292,16 +292,17 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         before = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(
-            f"Thorns Shield: {monster.chamption_od_darknes} "
-            f"dropped from {before} HP to "
-            f"{new_monster_hp}")
+            f"Thorns Shield: spiked defence made "
+            f"{monster.chamption_od_darknes} drop"
+            f" from {before} HP to {new_monster_hp}"
+        )
 
     # Mage special ability "fireball" and formated description steing
     if "fireball" in hero_special:
         before_fireball = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(
-            f"Fireball effect from {hero.champion_of_light} does fire "
+            f"Fireball effect: {hero.champion_of_light} does fire "
             f"damage to {monster.chamption_od_darknes}, causing "
             f"it do drop HP from {before_fireball} to {new_monster_hp}"
         )
@@ -311,7 +312,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         before_destroy_undead = new_monster_hp
         new_monster_hp = max(0, new_monster_hp - 1)
         specials_applied.append(
-            f"{hero.champion_of_light} cast Destroy undead and reduced "
+            f"Destroy undead: {hero.champion_of_light} cast "
+            f" Destroy undead and reduced "
             f"{monster.chamption_od_darknes} HP from "
             f"{before_destroy_undead} to {new_monster_hp}"
         )
@@ -336,9 +338,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             monster.armour = before_holly_might_armour - 1
             specials_applied.append(
                 f"Holly Might: {monster.chamption_od_darknes} armour"
-                f"dropped from {before_holly_might_armour} "
-                f" to {monster.armour} due to {hero_special}"
-                f"reducing it (-1)"
+                f" dropped from {before_holly_might_armour} "
+                f"to {monster.armour} HP due to {hero_special}"
+                f" reducing it (-1)"
             )
         else:
             specials_applied.append(
@@ -474,7 +476,7 @@ def battle_loop(hero, weapon, monster, combat_rows):
         # Outcome banner for good win, bad win and both kill
         if rep["outcome"] == "double_ko":
             print(stat_block("Battle result",
-                             [f"Double kill! Both"
+                             [f"Double kill! Both "
                               f"{monster.chamption_od_darknes}"
                               f" & {hero.champion_of_light} fall."]))
             break
@@ -513,7 +515,7 @@ def battle_loop(hero, weapon, monster, combat_rows):
                 "Battle",
                 [
                     f"{hero.champion_of_light} disengages"
-                    f" and flee from battlefield. "
+                    f" and fled from battlefield. "
                 ]
                 +
                 [
