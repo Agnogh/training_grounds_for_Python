@@ -289,12 +289,13 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             hero_special) and dmg_to_hero > 0:
         # monster_attempted_damage = any(raw > 0
         #                                for raw in monster_raw_damage)
-        before = new_monster_hp
+        before_thorns_shield = new_monster_hp
         new_monster_hp = new_monster_hp - 1  # allows now to go below 0
         specials_applied.append(
             f"Thorns Shield: spiked defence made "
             f"{monster.chamption_od_darknes} drop"
-            f" from {before} HP to {new_monster_hp}"
+            f" from {before_thorns_shield} HP to "
+            f"{new_monster_hp} HP"
         )
 
     # Mage special ability "fireball" and formated description steing
@@ -321,14 +322,15 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # Assassin special ability "deadly poison" if armour was penetrated
     if ("deadly" in hero_special and "poison" in hero_special):
         if any(net > 0 for net in hero_actual_damage):
-            before = new_monster_hp
+            before_deadly_poison = new_monster_hp
             new_monster_hp = max(0, new_monster_hp - 2)
             specials_applied.append(
                 f"Deadly Poison: {monster.chamption_od_darknes} "
-                f"got reduced from {before} HP to {new_monster_hp}"
-                f" HP due to {hero.champion_of_light} special skill "
+                f"got reduced from {before_deadly_poison} HP to "
+                f"{new_monster_hp} HP due to "
+                f"{hero.champion_of_light} special skill "
                 f"{hero_special}"
-                                )
+                )
 
     # --- Holy Might: -1 armour AFTER the battle round ---
     if "might" in hero_special and ("holly" in hero_special
