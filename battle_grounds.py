@@ -237,7 +237,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # Zombie effect death grip
     if ("death" in monster_special and "grip" in monster_special):
         before_deth_grip = new_hero_hp
-        new_hero_hp = max(0, new_hero_hp - 1)
+        new_hero_hp = new_hero_hp - 1  # now it will go below 0HP
         specials_applied.append(f"Death Grip: {hero.champion_of_light}"
                                 f" dropped from {before_deth_grip} HP"
                                 f" to {new_hero_hp} HP.")
@@ -290,7 +290,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         # monster_attempted_damage = any(raw > 0
         #                                for raw in monster_raw_damage)
         before = new_monster_hp
-        new_monster_hp = new_monster_hp - 1
+        new_monster_hp = new_monster_hp - 1  # allows now to go below 0
         specials_applied.append(
             f"Thorns Shield: spiked defence made "
             f"{monster.chamption_od_darknes} drop"
