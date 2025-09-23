@@ -323,7 +323,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     if ("deadly" in hero_special and "poison" in hero_special):
         if any(net > 0 for net in hero_actual_damage):
             before_deadly_poison = new_monster_hp
-            new_monster_hp = max(0, new_monster_hp - 2)
+            new_monster_hp = new_monster_hp - 2
             specials_applied.append(
                 f"Deadly Poison: {monster.chamption_od_darknes} "
                 f"got reduced from {before_deadly_poison} HP to "
