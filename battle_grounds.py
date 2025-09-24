@@ -223,6 +223,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # amount of hero amrour that monstr's attack had to go through
     hero_armour_during_monster_attack = hero.armour
 
+    # HitPoints calculation heor/monster
+    hero_hp_after_strikes = new_hero_hp
+    monster_hp_after_strikes = new_monster_hp
+
     # ===== POST-ROUND (always runs, can revive if allowed) =====
 
     specials_applied = []
@@ -279,7 +283,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 )
             else:
                 specials_applied.append(
-                    f"Armour Shred: no effect, {hero.champion_of_light} "
+                    f"Armour Shread: no effect, {hero.champion_of_light} "
                     f"armour is already at {hero.armour}! "
                     )
 
@@ -429,9 +433,15 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                "Spectral Shield)" if monster_strike_capped else "")
         )
 
+    """
     lines += [
         f"{hero.champion_of_light} HP: {hero_hp} → {new_hero_hp}",
         f"{monster.chamption_od_darknes} HP: {monster_hp} → {new_monster_hp}",
+    ]
+    """
+    lines += [
+        f"{hero.champion_of_light} HP: {hero_hp} → {hero_hp_after_strikes}",
+        f"{monster.chamption_od_darknes} HP: {monster_hp} → {monster_hp_after_strikes}",
     ]
 
     # show post-round effect (if any) + final HP after effects (+ or -)
@@ -439,9 +449,9 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         lines.append(f"[Post-round] {note}")
     if specials_applied:
         lines += [
-            f"[After effects] {hero.champion_of_light} HP = {new_hero_hp}"
+            f"[After effects] {hero.champion_of_light} HP = {new_hero_hp} ;"
             f" Armour = {hero.armour}",
-            f"[After effects] {monster.chamption_od_darknes}"
+            f"[After effects] {monster.chamption_od_darknes} ;"
             f" HP = {new_monster_hp} Armour = {monster.armour}"
         ]
 
