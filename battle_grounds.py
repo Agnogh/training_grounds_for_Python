@@ -712,7 +712,7 @@ def read_monster_row(ws, row: int) -> Monster_Character:
         champion_od_darkness=str(m_class),
         armour=m_armour,
         damage_min=m_min,
-        damage_max=m_min,
+        damage_max=m_max,
         hit_points=m_hp,
         raw_moster_damage=m_raw,
         special=m_special,
