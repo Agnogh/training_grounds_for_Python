@@ -264,7 +264,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                 f" dropped from {before_deth_grip} HP"
                                 f" to {new_hero_hp} HP.")
 
-    # Armour Shread -1 armour to hero appllied AFTER battle round
+    # Armour Shred -1 armour to hero appllied AFTER battle round
     if (
         "armour" in monster_special
         and ("shread" in monster_special or "shred" in monster_special)
@@ -276,14 +276,14 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             if before_armour_shred_armour > 0:
                 hero.armour = before_armour_shred_armour - 1
                 specials_applied.append(
-                    f"Armour Shread: {hero.champion_of_light} armour "
+                    f"Armour Shred: {hero.champion_of_light} armour "
                     f"dropped from {before_armour_shred_armour} "
                     f"to {hero.armour} due to {monster_special}"
                     f" reducing it (-1)."
                 )
             else:
                 specials_applied.append(
-                    f"Armour Shread: no effect, {hero.champion_of_light} "
+                    f"Armour Shred: no effect, {hero.champion_of_light} "
                     f"armour is already at {hero.armour}! "
                     )
 
