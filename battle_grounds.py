@@ -991,11 +991,6 @@ def main():
         monster.hit_points,     # Monster HP (starting value)
     ])
 
-    # --- Multi-round battle until defeat or flee ---
-    final_hero_hp, final_monster_hp, outcome = battle_loop(hero,
-                                                           weapon, monster,
-                                                           combat_rows)
-
     # Flush the combat log to the "Combat" sheet in one go
     sh = CLIENT.open_by_key(SHEET_ID)      # safe: one extra open per run
     combat_ws = ensure_combat_ws(sh)
