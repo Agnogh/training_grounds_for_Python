@@ -329,7 +329,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # Crusader special ability "destroy undead" and formated description steing
     if ("destroy" in hero_special and "undead" in hero_special):
         before_destroy_undead = new_monster_hp
-        new_monster_hp = max(0, new_monster_hp - 1)
+        new_monster_hp = new_monster_hp - 1  # now HP can drop below 0
         specials_applied.append(
             f"Destroy undead: {hero.champion_of_light} cast "
             f" Destroy undead and reduced "
