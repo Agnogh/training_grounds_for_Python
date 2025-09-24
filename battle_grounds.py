@@ -878,7 +878,8 @@ def load_from_gsheets():
     sh = CLIENT.open_by_key(SHEET_ID)
 
 # THIS IS FOR DEBUGFOR INCREASE OF STATS
-    # one-time debug: my modifications in Sheet are not seen
+    # I am keeping this one-time debug:
+    # despite my modifications in Sheet are seen now
     print(f"\n[List ID] Using sheet id: {SHEET_ID}")
     print("[Name of tabs] Tabs:", [ws.title for ws in sh.worksheets()])
     heroes_ws = sh.worksheet("Heroes")
@@ -924,8 +925,9 @@ def main():
     heroes, weapons, monsters = load_from_gsheets()
 
 
-# --- DEBUG: verify we read HP/Armour/Special from the sheet ---
-    print("\n[DEBUG] Loaded heroes:")
+# Keeping this debug as it will serve me as a list for players
+# DEBUG: verify we read HP/Armour/Special from the sheet
+    print("\n[Heroes list] Loaded heroes:")
     for idx, h in enumerate(heroes, start=2):  # start=2 ≈ sheet row 2
         print(
             f"  Heroes!row {idx}: {h.champion_of_light}, "
@@ -937,11 +939,29 @@ def main():
     picked_name = choose_from_list("Choose your Hero", hero_names)
     hero = next(h for h in heroes if h.champion_of_light == picked_name)
 
+# List of Monsters + abilities
+    print("\n[Monster list] Loaded monsters:")
+    for idx, m in enumerate(monsters, start=2):  # start=2 ≈ sheet row 2
+        print(
+            f"  Monsters!row {idx}: {m.champion_od_darkness}, "
+            f"HP={m.hit_points}, Armour={m.armour}, "
+            f"Damage={m.raw_monster_damage}, Special={m.special!r}"
+        )
+
 # choose monster (by class)
     monster_names = [m.champion_od_darkness for m in monsters]
     picked_monster = choose_from_list("Choose your Opponent", monster_names)
     monster = next(m for m in monsters if
                    m.champion_od_darkness == picked_monster)
+
+# List of Weapons
+    print("\n[Weaponry] Loaded weapons:")
+    for idx, w in enumerate(weapons, start=2):  # start=2 ≈ sheet row 2
+        print(
+            f"  Weapons!row {idx}: {w.type}, "
+            f"Damage={w.raw_weapon_damage}, "
+            f"Special={w.special!r}"
+        )
 
 # choose weapon (all weapons now)
     weapon_names = [w.type for w in weapons]
@@ -970,7 +990,7 @@ def main():
             f"Armour: {monster.armour}",
             f"Hit Points: {monster.hit_points}",
             f"Damage: {monster.raw_monster_damage} (parsed"
-            f"{monster.damage_min}-{monster.damage_max})",
+            f" {monster.damage_min}-{monster.damage_max})",
             f"Special: {monster.special or '—'}",
         ],
     ))
@@ -990,6 +1010,11 @@ def main():
         hero.hit_points,        # Hero HP (starting value)
         monster.hit_points,     # Monster HP (starting value)
     ])
+
+    # Still need this until someone dies or hero runs away
+    final_hero_hp, final_monster_hp, outcome = battle_loop(
+        hero, weapon, monster, combat_rows
+    )
 
     # Flush the combat log to the "Combat" sheet in one go
     sh = CLIENT.open_by_key(SHEET_ID)      # safe: one extra open per run
