@@ -64,6 +64,11 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     if ("quick" in hero_special and "hand" in hero_special):
         hero_strikes = 2
 
+    # Priest defensive skill to take max 1 HP damage(Ghost Shield)
+    spectral_shield_priest = (
+        "spectral" in hero_special and "shield" in hero_special
+        )
+
     # §§§ WEAPON SPECIAL ABILITES §§§
     # 2 times string with one weapons (dual daggers)
     two_rolls_dual_dagger = (
@@ -187,9 +192,22 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
         hero_actual_damage.append(net)
         hero_cap_flags.append(capped)
-
+    """
     monster_actual_damage = [max(0, r - hero.armour)
                              for r in monster_raw_damage]  # monster -> hero
+    """
+
+    # First apply hero armour, then cap to max 1 damage
+    monster_actual_damage = []
+    monster_cap_flags = []
+    for r in monster_raw_damage:
+        net = max(0, r - hero.armour)
+        capped = False
+        if spectral_shield_priest and net > 1:
+            net = 1
+            capped = True
+        monster_actual_damage.append(net)
+        monster_cap_flags.append(capped)
 
     # actual damage done and assigning to variable dmg_to_monster/hero
     dmg_to_monster = sum(hero_actual_damage)
@@ -397,14 +415,18 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
         )
 
-    for i, (raw, net) in enumerate(zip(monster_raw_damage,
-                                       monster_actual_damage), start=1):
+    for i, (raw, net, monster_strike_capped) in enumerate(zip(
+                                       monster_raw_damage,
+                                       monster_actual_damage,
+                                       monster_cap_flags), start=1):
         label = f"strike {i}" if monster_strikes > 1 else "strike"
         lines.append(
             f"{monster.chamption_od_darknes} {label}:"
             f" {raw} damage (weapon range {monster.raw_moster_damage})"
             f" → {hero.champion_of_light} takes {net} damage due to"
             f" armour {hero_armour_during_monster_attack}"
+            + (" (Damange capped to 1HP due to "
+               "Spectral Shield)" if monster_strike_capped else "")
         )
 
     lines += [
