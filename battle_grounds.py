@@ -35,6 +35,9 @@ def _norm(s: str) -> str:
     return (s or "").strip().lower()
 
 
+# Not used anymore as I decided not to go with canonical
+# as I switched to read raw text, but I am keeping it
+# as it took me great deal to figure it out!!
 def hero_special_for(hero) -> str:
     he = _norm(getattr(hero, "special", ""))
     if "healing touch" in he:
@@ -50,7 +53,7 @@ def hero_special_for(hero) -> str:
     if "deadly" in he and "poison" in he:
         return "deadly_poison"
     if "holly" in he and "might" in he:
-        return "holy_might"
+        return "holly_might"
     return "none"
 
 
@@ -313,8 +316,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # Druid special ability "Thornes shield" and formated description steing
     if ("thorns" in hero_special and "shield" in
             hero_special) and dmg_to_hero > 0:
-        # monster_attempted_damage = any(raw > 0
-        #                                for raw in monster_raw_damage)
         before_thorns_shield = new_monster_hp
         new_monster_hp = new_monster_hp - 1  # allows now to go below 0
         specials_applied.append(
@@ -358,7 +359,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                 f"{hero_special}"
                 )
 
-    # --- Holy Might: -1 armour AFTER the battle round ---
+    # --- Holly Might: -1 armour AFTER the battle round ---
     if "might" in hero_special and ("holly" in hero_special
                                     or "holy" in hero_special):
         before_holly_might_armour = monster.armour
@@ -372,7 +373,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             )
         else:
             specials_applied.append(
-                f"Holy Might: no effect {monster.champion_od_darkness}"
+                f"Holly Might: no effect {monster.champion_od_darkness}"
                 f" armour is already at {monster.armour}."
                 )
 
@@ -868,7 +869,7 @@ def write_combat_rows(combat_ws, rows, add_separator=True, use_dash_line=True):
             combat_ws.append_row(r, value_input_option="USER_ENTERED")
 
 # things (heroes, vilins, weapons) to
-#  load from Google Sheets
+# load from Google Sheets
 # =========================
 
 
