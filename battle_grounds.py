@@ -662,6 +662,7 @@ def stat_block(title: str, lines: list[str]) -> str:
     return "\n".join(content)
 
 
+# this could be removed, but I feel it might be better to keep it
 def auto_pick_single(label: str, options: list[str]) -> str:
     print(f"\n{label}:")
     for i, opt in enumerate(options, start=1):
@@ -793,15 +794,6 @@ def read_weapons_block(ws) -> list[Weapon]:
              # special_desc=str(d or ""),
          ))
     return weapons
-
-
-def as_range_or_none(val):
-    """Return (low, high) as val is a ranges
-    ('2-4', '2–4', '24' compact), else None."""
-    try:
-        return parse_damage_range(val)
-    except Exception:
-        return None
 
 
 def coerce_int_strict(val, label):
