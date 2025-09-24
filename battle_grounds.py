@@ -323,7 +323,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     # Mage special ability "fireball" and formated description steing
     if "fireball" in hero_special:
         before_fireball = new_monster_hp
-        new_monster_hp = max(0, new_monster_hp - 1)
+        new_monster_hp = new_monster_hp - 1  # to make sure HP goes below 0
         specials_applied.append(
             f"Fireball effect: {hero.champion_of_light} does fire "
             f"damage to {monster.chamption_od_darknes}, causing "
