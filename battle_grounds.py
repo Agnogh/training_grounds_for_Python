@@ -431,7 +431,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         label = f"strike {i}" if monster_strikes > 1 else "strike"
         lines.append(
             f"{monster.champion_od_darkness} {label}:"
-            f" {raw} damage (weapon range {monster.raw_moster_damage})"
+            f" {raw} damage (weapon range {monster.raw_monster_damage})"
             f" → {hero.champion_of_light} takes {net} damage due to"
             f" armour {hero_armour_during_monster_attack}"
             + (" (Damange capped to 1HP due to "
@@ -586,7 +586,7 @@ class Monster_Character:
     damage_min: int     # from E column
     damage_max: int     # also from E column
     hit_points: int  # Columnd D
-    raw_moster_damage: str
+    raw_monster_damage: str
     special: str = ""   # (cloumn F)
     special_desc: str = ""  # (column G)
 
@@ -715,7 +715,7 @@ def read_monster_row(ws, row: int) -> Monster_Character:
         damage_min=m_min,
         damage_max=m_max,
         hit_points=m_hp,
-        raw_moster_damage=m_raw,
+        raw_monster_damage=m_raw,
         special=m_special,
         special_desc=m_special_desc,
     )
@@ -763,7 +763,7 @@ def read_monsters_block(ws) -> list[Monster_Character]:
             damage_min=m_low,
             damage_max=m_high,
             hit_points=hp,
-            raw_moster_damage=raw,
+            raw_monster_damage=raw,
             special=str(f or ""),
             special_desc=str(g or ""),
         ))
@@ -969,7 +969,7 @@ def main():
         [
             f"Armour: {monster.armour}",
             f"Hit Points: {monster.hit_points}",
-            f"Damage: {monster.raw_moster_damage} (parsed"
+            f"Damage: {monster.raw_monster_damage} (parsed"
             f"{monster.damage_min}-{monster.damage_max})",
             f"Special: {monster.special or '—'}",
         ],
