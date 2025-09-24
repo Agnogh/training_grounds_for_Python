@@ -1,16 +1,23 @@
 
 # battle_setup.py plan
 # 1. Reads "python_battlefiled.xlsx" and shows:
-# - Hero (Heroes! A2 name-Not at this point), B2 class, C2 Armour, D2 HP)
-# - Weapon (Weapons! A2 type, B2 Damage)
-# - Monster (Monsters! B3 class, C3 Armour, D3 Damage, E3 HP)
+# - Hero (Heroes! A-name(NA ATP), B-class, C-Armour, D-HP, E-Spec. skill)
+# - Weapon (Weapons! A-Weapon(type), B-Damage)
+# - Monster (Monsters! B-Class, C-Armour, D-Damage, E-HP, F-Special skill)
 #
 # Flow:
 #   1) "Welcome to battle" message
-#   2) List heroes (only "Royal Guard" ATM) -> auto-select
-#   3) List weapons ("Spear" only this one) -> auto-select
-#   4) List monsters (only "Skeleton" mosnter) -> auto-select
+#   2) List heroes ->
+#   3) List weapons ->
+#   4) List monsters ->
 #   5) Display stat blocks for all
+#   6) Display combat round + math behind weapon calculation abd spec ability
+#   7) Display HP status after combat round
+#   8) Display Special ability effects if any
+#   9) Display HP and Armour status at the end of Battle round
+#   10) Ability to continue battle or not
+#   11) Final result when either hero or monster or both are killed
+
 
 import gspread
 from google.oauth2.service_account import Credentials
@@ -65,6 +72,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         hero_strikes = 2
 
     # Priest defensive skill to take max 1 HP damage(Ghost Shield)
+    # not gonna refactor that at this point as it works, maybe in future
     spectral_shield_priest = (
         "spectral" in hero_special and "shield" in hero_special
         )
@@ -192,10 +200,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
         hero_actual_damage.append(net)
         hero_cap_flags.append(capped)
-    """
-    monster_actual_damage = [max(0, r - hero.armour)
-                             for r in monster_raw_damage]  # monster -> hero
-    """
 
     # First apply hero armour, then cap to max 1 damage
     monster_actual_damage = []
@@ -433,15 +437,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                "Spectral Shield)" if monster_strike_capped else "")
         )
 
-    """
-    lines += [
-        f"{hero.champion_of_light} HP: {hero_hp} → {new_hero_hp}",
-        f"{monster.champion_od_darkness} HP: {monster_hp} → {new_monster_hp}",
-    ]
-    """
     lines += [
         f"{hero.champion_of_light} HP: {hero_hp} → {hero_hp_after_strikes}",
-        f"{monster.champion_od_darkness} HP: {monster_hp} → {monster_hp_after_strikes}",
+        f"{monster.champion_od_darkness} HP: {monster_hp} → "
+        f"{monster_hp_after_strikes}",
     ]
 
     # show post-round effect (if any) + final HP after effects (+ or -)
@@ -840,43 +839,7 @@ def ensure_combat_ws(sh):
     combat_ws.update(values=[header], range_name="A1:K1")
     return combat_ws
 
-    """
-def write_combat_rows(combat_ws, rows):
-    """
-    """
-    Clear old rows and write all battle rows in one go to reduce API calls
-    so i do not end up with error messages for too frequant calls
-    Rows must be lists of length 11 (A - K)
-    """
-
-    """
-    # Clear everything below header
-    combat_ws.resize(rows=2)            # keep it small briefly (optional)
-    combat_ws.resize(rows=max(2, len(rows) + 1))
-    if rows:
-        combat_ws.update(values=rows, range_name=f"A2:K{len(rows)+1}")
-    """
-    """
-    # Detect if there are previous battles (any data under header)
-    has_previous_battles = bool(combat_ws.acell("A2").value)
-
-    batch = []
-    if add_separator and has_previous_battles:
-        # dashed separator across all 11 columns, or a blank row
-        sep = (["────────"] * 11) if use_dash_line else ([""] * 11)
-        batch.append(sep)
-
-    batch.extend(rows)
-
-    # Append in one shot (newer gspread). Fallback to append_row for older versions.
-    try:
-        combat_ws.append_rows(batch, value_input_option="USER_ENTERED")
-    except AttributeError:
-        for r in batch:
-            combat_ws.append_row(r, value_input_option="USER_ENTERED")
-    """
-
-    # this better work Alvaro
+    # Thanks Alvaro
 
 
 def write_combat_rows(combat_ws, rows, add_separator=True, use_dash_line=True):
@@ -915,11 +878,9 @@ def load_from_gsheets():
 
 # THIS IS FOR DEBUGFOR INCREASE OF STATS
     # one-time debug: my modifications in Sheet are not seen
-    print(f"\n[DEBUG] Using sheet id: {SHEET_ID}")
-    print("[DEBUG] Tabs:", [ws.title for ws in sh.worksheets()])
+    print(f"\n[List ID] Using sheet id: {SHEET_ID}")
+    print("[Name of tabs] Tabs:", [ws.title for ws in sh.worksheets()])
     heroes_ws = sh.worksheet("Heroes")
-    # print("[DEBUG] Heroes!D2 raw cell value:", heroes_ws.acell("D2").value)
-    # print("[DEBUG] Heroes!B2:F2 row:", heroes_ws.get("B2:F2"))
     # ------------------------------------------------------------------
 
     weapons_ws = sh.worksheet("Weapons")
