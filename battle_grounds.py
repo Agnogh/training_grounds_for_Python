@@ -220,17 +220,17 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
     dmg_to_monster = sum(hero_actual_damage)
     dmg_to_hero = sum(monster_actual_damage)
 
-    # HitPoints calculation heor/monster
+    # HitPoints calculation hero/monster
     new_monster_hp = monster_hp - dmg_to_monster
     new_hero_hp = hero_hp - dmg_to_hero
 
     # Snapshots / cpilboard / temp save for display armour used during strikes
     # amount that strike from Hero had to go through
     monster_armour_during_hero_attack = monster.armour
-    # amount of hero amrour that monstr's attack had to go through
+    # amount of hero amrour that monster's attack had to go through
     hero_armour_during_monster_attack = hero.armour
 
-    # HitPoints calculation heor/monster
+    # HitPoints calculation hero/monster
     hero_hp_after_strikes = new_hero_hp
     monster_hp_after_strikes = new_monster_hp
 
@@ -244,7 +244,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if allow_revive or new_monster_hp > 0:
             new_monster_hp += 1
             specials_applied.append(
-                f"Drain Life: {monster.champion_od_darkness} "
+                f"Drain Life: {monster.champion_of_darkness} "
                 f"drains {hero.champion_of_light} and "
                 f"regerates itself for 1 HP")
 
@@ -254,7 +254,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             before_hammer_hit = monster.armour
             monster.armour = max(0, monster.armour - 1)
             specials_applied.append(
-                f"{weapon.type}: -1 to {monster.champion_od_darkness} armour"
+                f"{weapon.type}: -1 to {monster.champion_of_darkness} armour"
                 f" → destroys the monster's armour from "
                 f"{before_hammer_hit} to {monster.armour}"
             )
@@ -265,10 +265,10 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
 
     # Zombie effect death grip
     if ("death" in monster_special and "grip" in monster_special):
-        before_deth_grip = new_hero_hp
+        before_death_grip = new_hero_hp
         new_hero_hp = new_hero_hp - 1  # now it will go below 0HP
         specials_applied.append(f"Death Grip: {hero.champion_of_light}"
-                                f" dropped from {before_deth_grip} HP"
+                                f" dropped from {before_death_grip} HP"
                                 f" to {new_hero_hp} HP.")
 
     # Armour Shred -1 armour to hero appllied AFTER battle round
@@ -320,7 +320,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         new_monster_hp = new_monster_hp - 1  # allows now to go below 0
         specials_applied.append(
             f"Thorns Shield: spiked defence made "
-            f"{monster.champion_od_darkness} drop"
+            f"{monster.champion_of_darkness} drop"
             f" from {before_thorns_shield} HP to "
             f"{new_monster_hp} HP"
         )
@@ -331,7 +331,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         new_monster_hp = new_monster_hp - 1  # to make sure HP goes below 0
         specials_applied.append(
             f"Fireball effect: {hero.champion_of_light} does fire "
-            f"damage to {monster.champion_od_darkness}, causing "
+            f"damage to {monster.champion_of_darkness}, causing "
             f"it do drop HP from {before_fireball} to {new_monster_hp}"
         )
 
@@ -342,7 +342,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         specials_applied.append(
             f"Destroy undead: {hero.champion_of_light} cast "
             f" Destroy undead and reduced "
-            f"{monster.champion_od_darkness} HP from "
+            f"{monster.champion_of_darkness} HP from "
             f"{before_destroy_undead} to {new_monster_hp}"
         )
 
@@ -352,7 +352,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             before_deadly_poison = new_monster_hp
             new_monster_hp = new_monster_hp - 2
             specials_applied.append(
-                f"Deadly Poison: {monster.champion_od_darkness} "
+                f"Deadly Poison: {monster.champion_of_darkness} "
                 f"got reduced from {before_deadly_poison} HP to "
                 f"{new_monster_hp} HP due to "
                 f"{hero.champion_of_light} special skill "
@@ -366,14 +366,14 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         if before_holly_might_armour > 0:
             monster.armour = before_holly_might_armour - 1
             specials_applied.append(
-                f"Holly Might: {monster.champion_od_darkness} armour"
+                f"Holly Might: {monster.champion_of_darkness} armour"
                 f" dropped from {before_holly_might_armour} "
                 f"to {monster.armour} HP due to {hero_special}"
                 f" reducing it (-1)"
             )
         else:
             specials_applied.append(
-                f"Holly Might: no effect {monster.champion_od_darkness}"
+                f"Holly Might: no effect {monster.champion_of_darkness}"
                 f" armour is already at {monster.armour}."
                 )
 
@@ -418,7 +418,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         lines.append(
             f"{hero.champion_of_light} {label}: {lhs} damage with "
             f"{weapon.type} (weapon range {weapon.raw_weapon_damage}){note} "
-            f"→ {monster.champion_od_darkness} takes "
+            f"→ {monster.champion_of_darkness} takes "
             f"{net} damage due to armour {monster_armour_during_hero_attack}"
             + (" (Damage capped to 1HP due to Ghost Shield)" if capped else "")
             + (" (Whip ignores standard armour)" if ignore_armour_whip else "")
@@ -430,17 +430,17 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
                                        monster_cap_flags), start=1):
         label = f"strike {i}" if monster_strikes > 1 else "strike"
         lines.append(
-            f"{monster.champion_od_darkness} {label}:"
+            f"{monster.champion_of_darkness} {label}:"
             f" {raw} damage (weapon range {monster.raw_monster_damage})"
             f" → {hero.champion_of_light} takes {net} damage due to"
             f" armour {hero_armour_during_monster_attack}"
-            + (" (Damange capped to 1HP due to "
+            + (" (Damage capped to 1HP due to "
                "Spectral Shield)" if monster_strike_capped else "")
         )
 
     lines += [
         f"{hero.champion_of_light} HP: {hero_hp} → {hero_hp_after_strikes}",
-        f"{monster.champion_od_darkness} HP: {monster_hp} → "
+        f"{monster.champion_of_darkness} HP: {monster_hp} → "
         f"{monster_hp_after_strikes}",
     ]
 
@@ -451,7 +451,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         lines += [
             f"[After effects] {hero.champion_of_light} HP = {new_hero_hp} ;"
             f" Armour = {hero.armour}",
-            f"[After effects] {monster.champion_od_darkness} ;"
+            f"[After effects] {monster.champion_of_darkness} ;"
             f" HP = {new_monster_hp} Armour = {monster.armour}"
         ]
 
@@ -512,13 +512,13 @@ def battle_loop(hero, weapon, monster, combat_rows):
         if rep["outcome"] == "double_ko":
             print(stat_block("Battle result",
                              [f"Double kill! Both "
-                              f"{monster.champion_od_darkness}"
+                              f"{monster.champion_of_darkness}"
                               f" & {hero.champion_of_light} fall."]))
             break
         elif rep["outcome"] == "monster_defeated":
             print(stat_block("Battle result",
                              [
-                                 f"{monster.champion_od_darkness}"
+                                 f"{monster.champion_of_darkness}"
                                  f" is defeated!"
                              ]
                              +
@@ -535,7 +535,7 @@ def battle_loop(hero, weapon, monster, combat_rows):
                              ]
                              +
                              [
-                                 f"{monster.champion_od_darkness}"
+                                 f"{monster.champion_of_darkness}"
                                  f" stands on top of the broken"
                                  f" body of your hero!"
                              ]
@@ -554,7 +554,7 @@ def battle_loop(hero, weapon, monster, combat_rows):
                 ]
                 +
                 [
-                    f"{monster.champion_od_darkness} is too"
+                    f"{monster.champion_of_darkness} is too"
                     f" powerful for our hero."
                 ],
             ))
@@ -581,7 +581,7 @@ class Hero_Character:
 
 @dataclass
 class Monster_Character:
-    champion_od_darkness: str   # B column
+    champion_of_darkness: str   # B column
     armour: int     # (Column C)
     damage_min: int     # from E column
     damage_max: int     # also from E column
@@ -710,7 +710,7 @@ def read_monster_row(ws, row: int) -> Monster_Character:
     m_special = (ws.acell(f"F{row}").value or "").strip()
     m_special_desc = (ws.acell(f"G{row}").value or "").strip()
     return Monster_Character(
-        champion_od_darkness=str(m_class),
+        champion_of_darkness=str(m_class),
         armour=m_armour,
         damage_min=m_min,
         damage_max=m_max,
@@ -758,7 +758,7 @@ def read_monsters_block(ws) -> list[Monster_Character]:
         raw = str(e or "")
         m_low, m_high = parse_damage_range(raw)
         monsters.append(Monster_Character(
-            champion_od_darkness=str(b),
+            champion_of_darkness=str(b),
             armour=armour,
             damage_min=m_low,
             damage_max=m_high,
@@ -943,16 +943,16 @@ def main():
     print("\n[Monster list] Loaded monsters:")
     for idx, m in enumerate(monsters, start=2):  # start=2 ≈ sheet row 2
         print(
-            f"  Monsters!row {idx}: {m.champion_od_darkness}, "
+            f"  Monsters!row {idx}: {m.champion_of_darkness}, "
             f"HP={m.hit_points}, Armour={m.armour}, "
             f"Damage={m.raw_monster_damage}, Special={m.special!r}"
         )
 
 # choose monster (by class)
-    monster_names = [m.champion_od_darkness for m in monsters]
+    monster_names = [m.champion_of_darkness for m in monsters]
     picked_monster = choose_from_list("Choose your Opponent", monster_names)
     monster = next(m for m in monsters if
-                   m.champion_od_darkness == picked_monster)
+                   m.champion_of_darkness == picked_monster)
 
 # List of Weapons
     print("\n[Weaponry] Loaded weapons:")
@@ -985,7 +985,7 @@ def main():
          f"{weapon.damage_min}-{weapon.damage_max})"],
     ))
     print(stat_block(
-        f"Monster: {monster.champion_od_darkness}",
+        f"Monster: {monster.champion_of_darkness}",
         [
             f"Armour: {monster.armour}",
             f"Hit Points: {monster.hit_points}",
