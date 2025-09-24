@@ -887,10 +887,6 @@ def load_from_gsheets():
 
     weapons_ws = sh.worksheet("Weapons")
     monsters_ws = sh.worksheet("Monsters")
-# THIS IS FOR DEBUGFOR INCREASE OF STATS
-    heroes_ws = sh.worksheet("Heroes")
-    weapons_ws = sh.worksheet("Weapons")
-    monsters_ws = sh.worksheet("Monsters")
 
     # HEROES (B2:F11) — one call to avoid erros due
     # to frequesnt requests
