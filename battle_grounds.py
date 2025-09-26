@@ -25,6 +25,10 @@ import re
 from dataclasses import dataclass
 import random
 
+# Based on stack I need to add this standard library
+import os
+import json
+
 
 def roll_damage(min_d: int, max_d: int) -> int:
     return random.randint(min_d, max_d)  # inclusive
@@ -607,18 +611,27 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive.file",
 ]
 
-CREDS = Credentials.from_service_account_file(
-    "pythonbattlefield-2a7d07648ac1.json"
+# Mika Tarkinsen told me to add this as early warning
+# so I know what to fix when I start getting auth error
+# that i had no idea what was going on
+creds_json = os.environ.get("CREDS")
+if not creds_json:
+    raise RuntimeError(
+        "Missing CREDS env var. Heroku > Settings > Config Vars."
     )
+
+CREDS = Credentials.from_service_account_info(
+    json.loads(creds_json))
+
 CLIENT = gspread.authorize(CREDS.with_scopes(SCOPE))
 
 
 # this is to use the correct ID (with the hyphen after the 1
 # I was missing all this damn time)
-SHEET_ID = (
-    "1-QrsVmnaWtkZMZV8pu5HJkQnQXWFyk3L"
-    "PyD9UdntkLI"
-)
+SHEET_ID = os.environ.get(
+    "SHEET_ID",
+    "1-QrsVmnaWtkZMZV8pu5HJkQnQXWFyk3LPyD9UdntkLI",
+    )
 
 
 # Weapons and armour range and values
