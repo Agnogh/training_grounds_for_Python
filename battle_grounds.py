@@ -18,6 +18,11 @@
 #   10) Ability to continue battle or not
 #   11) Final result when either hero or monster or both are killed
 
+# adding just random comment so I save it so I can commit it
+# so i have the version before merging template from
+# https://github.com/Code-Institute-Org/python-essentials-template.git
+# as this si the one I need to use in order to have my project 
+# accepted. Maybe that is why I had issues with Heroku
 
 import gspread
 from google.oauth2.service_account import Credentials
