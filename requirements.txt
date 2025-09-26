@@ -16,3 +16,6 @@ requests==2.32.5
 requests-oauthlib==2.0.0
 rsa==4.9.1
 urllib3==2.5.0
+# Your requirements go here
+# -> tough luck, I already added them as I found about
+# this template when I was done with my project
