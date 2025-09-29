@@ -6,77 +6,77 @@
 
 [Python battle grounds](#python-battle-grounds)
 
-[1 Game Overview](#1-game-overview)
+    [1 Game Overview](#1-game-overview)
 
-[1.1 Theme & Inspiration](#11-theme--inspiration)
+        [1.1 Theme & Inspiration](#11-theme--inspiration)
 
-[1.2 Design Goal](#12-design-goals)
+        [1.2 Design Goal](#12-design-goals)
 
-[2 Game rules](#2-game-rules)
+    [2 Game rules](#2-game-rules)
 
-[A Battle Round consists of:](#a-battle-round-consists-of)
+    [A Battle Round consists of:](#a-battle-round-consists-of)
 
-[3 Characters & Gear](#3-characters--gear)
+    [3 Characters & Gear](#3-characters--gear)
 
-[3.1 Heroes](#31-heroes)
+        [3.1 Heroes](#31-heroes)
 
-[3.2 Monsters](#32-monsters)
+        [3.2 Monsters](#32-monsters)
 
-[4 Special abilities in gameplay](#4-special-abilities-in-gameplay)
+    [4 Special abilities in gameplay](#4-special-abilities-in-gameplay)
 
-[4.1 Heros special abilities](#41-heros-special-abilities)
+        [4.1 Hero's special abilities](#41-heros-special-abilities)
 
-[4.2 Monsters special abilities](#42-monsters-special-abilities)
+        [4.2 Monsters' special abilities](#42-monsters-special-abilities)
 
-[4.3 Weapons special abilities](#43-weapons-special-abilities)
+        [4.3 Weapons special abilities](#43-weapons-special-abilities)
 
-[5 How Combat Works (Detail)](#5-how-combat-works-detail)
+    [5 How Combat Works (Detail)](#5-how-combat-works-detail)
 
-[Rolls](#rolls)
+        [Rolls](#rolls)
 
-[Armour & Caps](#armour--caps)
+        [Armour & Caps](#armour--caps)
 
-[Post-Round Effects](#post-round-effects)
+        [Post-Round Effects](#post-round-effects)
 
-[Display](#display)
+        [Display](#display)
 
-[6 Quality](#6-quality)
+    [6 Quality](#6-quality)
 
-[6.1 *Testing*](#61-testing)
+        [6.1 *Testing*](#61-testing)
 
-[6.2 Fixed Bugs (highlights)](#62-fixed-bugs-highlights)
+        [6.2 Fixed Bugs (highlights)](#62-fixed-bugs-highlights)
 
-[7 Google Sheets Integration](#7-google-sheets-integration)
+    [7 Google Sheets Integration](#7-google-sheets-integration)
 
-[8 Tech Stack](#8-tech-stack)
+    [8 Tech Stack](#8-tech-stack)
 
-[9 Deployment to Heroku](#9-deployment-to-heroku)
+    [9 Deployment to Heroku](#9-deployment-to-heroku)
 
-[One-time app setup](#one-time-app-setup)
+        [One-time app setup](#one-time-app-setup)
 
-[Add buildpacks](#add-buildpacks-order-matters)
+        [Add buildpacks](#add-buildpacks-order-matters)
 
-[Set Config Vars (Settings → Config Vars):](#set-config-vars-settings--config-vars)
+        [Set Config Vars (Settings → Config Vars):](#set-config-vars-settings--config-vars)
 
-[Procfile*](#procfile-should-be)
+        [Procfile*](#procfile-should-be)
 
-[10 Known Limitations / Future Ideas](#10-known-limitations--future-ideas)
+    [10 Known Limitations / Future Ideas](#10-known-limitations--future-ideas)
 
-[11 Special requierements from Code Institute](#11-special-requirements-from-code-institute)
+    [11 Special requirements from Code Institute](#11-special-requirements-from-code-institute)
 
-[11.1 Reminders](#111-reminders)
+        [11.1 Reminders](#111-reminders)
 
-[11.2 Creating the Heroku app](#112-creating-the-heroku-app)
+        [11.2 Creating the Heroku app](#112-creating-the-heroku-app)
 
-[11.3 Constraints](#113-constraints)
+        [11.3 Constraints](#113-constraints)
 
-[12 Credits & Thanks](#12-credits--thanks12)
+    [12 Credits & Thanks](#12-credits--thanks12)
 
-[12.1 Credits](#121-credits)
+        [12.1 Credits](#121-credits)
 
-[12.2 Thanks](#122-thanks)
+        [12.2 Thanks](#122-thanks)
 
-[13 Final note](#13-final-note)
+    [13 Final note](#13-final-note)
 
 
 
@@ -126,7 +126,9 @@ HP can go below 0 for both sides (by design), so overkill is visible in logs.
 Hero list: 
 *Royal Guard*, *Rogue*, *Assassin*, *Knight*, *Paladin*, Crusader*, *Mage*, *Priest*, *Cleric*, *Druid*
 
-Each hero has: Armour, HP, and an optional Special ability
+Each hero has: Armour, HP, and an optional Special ability.
+
+![Heroes list](/assets/Hero%20spreadsheet.jpg)
 
 ### 3.2 *Monsters*
 
@@ -134,12 +136,15 @@ Monsters list: *Vampire, Skeleton, Werewolf, Wraight, Zombie*
 
 Each monster has: Armour, HP, Damage Range, and, in some cases, a Special ability.
 
+![Monsters list](/assets/Monsters%20Spreadsheet.jpg)
+
 ### 3.3 *Weapons*
 
 List of weapons: *Spear, Dual daggers, Shadow blade, Flail, Long sword, Axe, Staff, Mace, Whip, Hammer*
 
 Weapons define base damage ranges and sometimes have special rules:
 
+![Weapons list](/assets/Weapons%20spreadsheet.jpg)
 
 ## 4 Special abilities in gameplay
 
@@ -202,16 +207,24 @@ Hero: 1 (or 2 due to special ability) strikes
 
 Monster: 1 strike (currently, there are no monsters with dual strike).
 
+![Regular strike](/assets/Combat%20spreadsheet.jpg)
+
 ### *Armour & Caps*
 
-Armour is applied per strike using the snapshot armour at strike time. Snapshot is used to display status or armour during the Combat round, as in the next battle round, armour might be reduced
+Armour is applied per strike using the snapshot armour at strike time. Snapshot is used to display status or armour during the Combat round, as in the next battle round, armour might be reduced.
 
 Caps (Ghost shield/Spectral shield) reduce per strike net damage to 1 (after armour has been applied).
+
+![Armour and Caps 1](/assets/Combat_round_1_Armour_and_Caps.jpg)
+
+![Armour and Caps 2](/assets/Combat_round_2_Armour_and_Caps.jpg)
 
 ### *Post-Round Effects*
 
 To see the list of post-round effects, check 
 ## 4 Special abilities in gameplay
+
+![Post Round](/assets/Combat_round_3_Post_Round.jpg)
 
 ### *Display*
 
@@ -221,7 +234,9 @@ To see the list of post-round effects, check
 
 - Finally, [After effects] lines show final HP/Armour.
 
+![Display 1](/assets/Combat_round_4-Display_1.jpg)
 
+![Display 2](/assets/Combat_round_4-Display_2.jpg)
 
 ## 6 Quality
 ### 6.1 *Testing*
@@ -400,11 +415,11 @@ I had lots of ideas, but the project is already stretched outside of the time al
 
 Check
 [section "Deployment to Heroku"](#9-deployment-to-heroku)
-Also checl
+Also check
 [section "One-time app setup"](#one-time-app-setup)
 
 
-When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
+***When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:***
 
 1. `heroku/python`
 2. `heroku/nodejs`
@@ -420,7 +435,7 @@ Check
 
 Check
 [section "Deploy"](#9-deployment-to-heroku)
-### 
+
 
 
 ## 11.3 Constraints
@@ -429,12 +444,12 @@ Check
 ***The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise, it will be wrapped onto a second line.***
 
 
-This part was not done as game needs to be explained, follow up text needs to be descriptive and game mechanic (despite being simple) is too complex for average player to understand what ifs going on.
+This part was not done as game needs to be explained, follow-up text needs to be descriptive, and the game mechanic (despite being simple) is too complex for the average player to understand what is going on.
 
 Those almost mandatory lines would make the game possibly confusing when it comes to 
-1. total damange deducted by armour
+1. total damage deducted by armour
 2. then applying special skills that either reduce or increase health and/or armour
-3. on top of some special skills contracting regular battle mechanic
+3. on top of some special skills, contracting a regular battle mechanic 
 
 
 ## 12 Credits & Thanks
@@ -474,13 +489,9 @@ Bless their hearts
 
 
 
-"# venvmodule" 
-# Python battle grounds
-
-
 ![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
 
-
+![Alt text for accessibility](path/to/image.png "Optional title")
 
 
 
