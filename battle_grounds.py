@@ -460,8 +460,8 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         lines += [
             f"[After effects] {hero.champion_of_light} HP = {new_hero_hp} ;"
             f" Armour = {hero.armour}",
-            f"[After effects] {monster.champion_of_darkness} ;"
-            f" HP = {new_monster_hp} Armour = {monster.armour}"
+            f"[After effects] {monster.champion_of_darkness} "
+            f" HP = {new_monster_hp} ; Armour = {monster.armour}"
         ]
 
     # final outcome after everything (battle rounds & effect of spec. ability)
