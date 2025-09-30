@@ -5,77 +5,41 @@
 
 
 [Python battle grounds](#python-battle-grounds)
-
-    [1 Game Overview](#1-game-overview)
-
+    [Game Overview](#1-game-overview)
         [1.1 Theme & Inspiration](#11-theme--inspiration)
-
         [1.2 Design Goal](#12-design-goals)
-
     [2 Game rules](#2-game-rules)
-
     [A Battle Round consists of:](#a-battle-round-consists-of)
-
     [3 Characters & Gear](#3-characters--gear)
-
         [3.1 Heroes](#31-heroes)
-
         [3.2 Monsters](#32-monsters)
-
     [4 Special abilities in gameplay](#4-special-abilities-in-gameplay)
-
         [4.1 Hero's special abilities](#41-heros-special-abilities)
-
         [4.2 Monsters' special abilities](#42-monsters-special-abilities)
-
         [4.3 Weapons special abilities](#43-weapons-special-abilities)
-
     [5 How Combat Works (Detail)](#5-how-combat-works-detail)
-
         [Rolls](#rolls)
-
         [Armour & Caps](#armour--caps)
-
         [Post-Round Effects](#post-round-effects)
-
         [Display](#display)
-
     [6 Quality](#6-quality)
-
         [6.1 *Testing*](#61-testing)
-
         [6.2 Fixed Bugs (highlights)](#62-fixed-bugs-highlights)
-
     [7 Google Sheets Integration](#7-google-sheets-integration)
-
     [8 Tech Stack](#8-tech-stack)
-
     [9 Deployment to Heroku](#9-deployment-to-heroku)
-
         [One-time app setup](#one-time-app-setup)
-
         [Add buildpacks](#add-buildpacks-order-matters)
-
         [Set Config Vars (Settings → Config Vars):](#set-config-vars-settings--config-vars)
-
         [Procfile*](#procfile-should-be)
-
     [10 Known Limitations / Future Ideas](#10-known-limitations--future-ideas)
-
     [11 Special requirements from Code Institute](#11-special-requirements-from-code-institute)
-
         [11.1 Reminders](#111-reminders)
-
         [11.2 Creating the Heroku app](#112-creating-the-heroku-app)
-
         [11.3 Constraints](#113-constraints)
-
     [12 Credits & Thanks](#12-credits--thanks12)
-
         [12.1 Credits](#121-credits)
-
         [12.2 Thanks](#122-thanks)
-
     [13 Final note](#13-final-note)
 
 
