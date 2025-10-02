@@ -564,7 +564,8 @@ def battle_loop(hero, weapon, monster, combat_rows):
             break
 
         # for player to have option to continue or flee
-        choice = input("Press any key to continue, or 'F' to "
+        choice = input("Press Enter to continue, or"
+                       " 'F' + Enter to "
                        "flee the battle: ").strip().lower()
         if choice == "f":
             print(stat_block(
