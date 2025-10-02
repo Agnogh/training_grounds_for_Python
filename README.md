@@ -254,17 +254,19 @@ The game reads Heroes, Weapons, and Monsters from tabs in a Google Sheet.
 
 All combat rounds are written to a Combat tab with headers:
 
-A: Damage done         (hero raw pre-armour)
-B: Damage inflicted    (hero net → monster after armour/caps)
-C: Damage received     (monster raw to hero)
-D: Damage taken        (monster net → hero after armour/caps)
-E: Hero ability        (text)
-F: Monster ability     (text)
-G: Weapon ability      (text)
-H: Armour Hero         (end of round, after specials)
-I: Armour Monster      (end of round, after specials)
-J: Hero HP             (end of round, after specials)
-K: Monster HP          (end of round, after specials)
+| Col | Header            | Meaning |
+|-----|-------------------|--------|
+| A   | Damage done       | hero raw pre-armour |
+| B   | Damage inflicted  | hero net → monster after armour/caps |
+| C   | Damage received   | monster raw → hero |
+| D   | Damage taken      | monster net → hero after armour/caps |
+| E   | Hero ability      | text |
+| F   | Monster ability   | text |
+| G   | Weapon ability    | text |
+| H   | Armour Hero       | end of round, after specials |
+| I   | Armour Monster    | end of round, after specials |
+| J   | Hero HP           | end of round, after specials |
+| K   | Monster HP        | end of round, after specials |
 
 
 A Round 0 row is logged first with starting HP/Armour.
@@ -454,7 +456,6 @@ Bless their hearts
 
 ![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
 
-![Alt text for accessibility](path/to/image.png "Optional title")
 
 
 
