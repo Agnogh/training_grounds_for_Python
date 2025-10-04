@@ -267,7 +267,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             specials_applied.append(
                 f"Drain Life: {monster.champion_of_darkness} "
                 f"drains {hero.champion_of_light} and "
-                f"regerates itself for 1 HP")
+                f"regenerates itself for 1 HP")
 
     # Hammer/Warhammer reduce monsters armour by 1 after every battle round
     if break_armour_hammer:
@@ -353,7 +353,7 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
         specials_applied.append(
             f"Fireball effect: {hero.champion_of_light} does fire "
             f"damage to {monster.champion_of_darkness}, causing "
-            f"it do drop HP from {before_fireball} to {new_monster_hp}"
+            f"it to drop HP from {before_fireball} to {new_monster_hp}"
         )
 
     # Crusader special ability "destroy undead" and formated description steing
@@ -572,7 +572,7 @@ def battle_loop(hero, weapon, monster, combat_rows):
                 "Battle",
                 [
                     f"{hero.champion_of_light} disengages"
-                    f" and fled from battlefield. "
+                    f" and flees from battlefield. "
                 ]
                 +
                 [
