@@ -818,7 +818,6 @@ def read_weapons_block(ws) -> list[Weapon]:
              # special ability (we are on now!!)
              special=(c or "").strip(),
              # in case description for spec ability is added
-             
          ))
     return weapons
 
