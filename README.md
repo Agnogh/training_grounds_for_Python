@@ -98,7 +98,7 @@ Each hero has: Armour, HP, and an optional Special ability.
 
 ### 3.2 *Monsters*
 
-Monsters list: *Vampire, Skeleton, Werewolf, Wraight, Zombie*
+Monsters list: *Vampire, Skeleton, Werewolf, Wraith, Zombie*
 
 Each monster has: Armour, HP, Damage Range, and, in some cases, a Special ability.
 
@@ -145,7 +145,7 @@ Skeleton     ->      *Armoured* High armour applied
 
 Werewolf     ->      *Shred armour* Every successful attack reduces hero armour by one.
 
-Wraight     ->     *Ghost shield* Can receive max 1 damage per attack (after armour is bypassed)
+Wraith    ->     *Ghost shield* Can receive max 1 damage per attack (after armour is bypassed)
 
 Zombie     ->      *Death grip* Does extra 1 damage (ignores hero armour)
 
@@ -177,19 +177,21 @@ Combat (game flow) is described through *"flowchart"* and *phase-by-phase* descr
 flowchart TD
   A[Start] --> B[Welcome to battle]
   B --> C[Load data from Google Sheets<br/>Heroes / Weapons / Monsters]
-  C --> D[Choose Hero]
-  D --> E[Choose Weapon]
-  E --> F[Choose Monster]
-  F --> G[Show stat blocks]
-  G --> H{Battle loop}
-  H --> I[Resolve simultaneous round<br/>apply armour & specials]
-  I --> J[Append round to 'Combat' sheet]
-  J --> K{Outcome?}
-  K -->|Double KO| L[Show result: both defeated] --> Z[End]
-  K -->|Monster defeated| M[Show result: hero wins] --> Z
-  K -->|Hero defeated| N[Show result: monster wins] --> Z
-  K -->|Continue| H
-  H -->|Player chooses 'F' to flee| P[Show flee message] --> Z
+  C --> D[Show Hero list and stats]
+  D --> E[Choose Hero]
+  E --> F[Show Monster list and stats]
+  F --> G[Choose Monster]
+  G --> H[Show list of weapons and stats]
+  H --> I[Choose a Weapon to equip on your Hero]
+  I --> J{Battle loop}
+  J --> K[Resolve simultaneous round<br/>apply armour & specials]
+  K --> L[Append round to 'Combat' sheet]
+  L --> M{Outcome?}
+  M -->|Double KO| N[Show result: both defeated] --> Z[End]
+  M -->|Monster defeated| O[Show result: hero wins] --> Z
+  M -->|Hero defeated| P[Show result: monster wins] --> Z
+  M -->|Continue the fight| I
+  M -->|Player chooses 'F' to flee| R[Show flee message] --> Z
 
 ```
 
