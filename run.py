@@ -8,8 +8,6 @@
 # this should call my game entry point - run.py
 # from battle_grounds import main
 
-# if __name__ == "__main__":
-#    main()
 
 # battle_setup.py plan
 # 1. Reads "python_battlefiled.xlsx" and shows:
@@ -433,8 +431,6 @@ def resolve_simultaneous_round(hero, weapon, monster, hero_hp: int,
             note = " + (Damage multiplier x2)"
 
         # If I ever want to use variables over hardcoded text
-        # ghost_note = " (capped by Ghost Shield)" if capped else ""
-        #  whip_note = " (ignores armour)" if ignore_armour_whip else ""
 
         lines.append(
             f"{hero.champion_of_light} {label}: {lhs} damage with "
@@ -822,7 +818,7 @@ def read_weapons_block(ws) -> list[Weapon]:
              # special ability (we are on now!!)
              special=(c or "").strip(),
              # in case description for spec ability is added
-             # special_desc=str(d or ""),
+             
          ))
     return weapons
 
