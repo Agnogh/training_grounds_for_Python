@@ -191,7 +191,7 @@ flowchart TD
   K -->|Continue| H
   H -->|Player chooses 'F' to flee| P[Show flee message] --> Z
 
-``` (not mermaid)
+```
 
 
 ### 5.2 Gameplay flow (Description)
