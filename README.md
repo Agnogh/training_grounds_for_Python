@@ -18,6 +18,8 @@
     - [4.2 Monsters' special abilities](#42-monsters-special-abilities)
     - [4.3 Weapons special abilities](#43-weapons-special-abilities)
  - [5 How Combat Works (Detail)](#5-how-combat-works-detail)
+    - [5.1 Gameplay flow (Flowchart)](#51-gameplay-flow-flowchart)
+    - [5.2 Gameplay flow (Description)](#52-gameplay-flow-description)
     - [Rolls](#rolls)
     - [Armour & Caps](#armour--caps)
     - [Post-Round Effects](#post-round-effects)
@@ -165,7 +167,36 @@ Hammer        ->      *Shield breaker* -> Destroys 1 armour after each su
 
 ## 5 How Combat Works (Detail)
 
-### *Rolls*
+Combat (game flow) is described through *"flowchart"* and *phase-by-phase* description
+
+
+### 5.1 Gameplay flow (Flowchart)
+
+```mermaid
+
+flowchart TD
+  A[Start] --> B[Welcome to battle]
+  B --> C[Load data from Google Sheets<br/>Heroes / Weapons / Monsters]
+  C --> D[Choose Hero]
+  D --> E[Choose Weapon]
+  E --> F[Choose Monster]
+  F --> G[Show stat blocks]
+  G --> H{Battle loop}
+  H --> I[Resolve simultaneous round<br/>apply armour & specials]
+  I --> J[Append round to 'Combat' sheet]
+  J --> K{Outcome?}
+  K -->|Double KO| L[Show result: both defeated] --> Z[End]
+  K -->|Monster defeated| M[Show result: hero wins] --> Z
+  K -->|Hero defeated| N[Show result: monster wins] --> Z
+  K -->|Continue| H
+  H -->|Player chooses 'F' to flee| P[Show flee message] --> Z
+
+``` (not mermaid)
+
+
+### 5.2 Gameplay flow (Description)
+
+#### *Rolls*
 
 Hero: 1 (or 2 due to special ability) strikes
 
@@ -173,17 +204,17 @@ Monster: 1 strike (currently, there are no monsters with dual strike).
 
 ![Regular strike](/assets/Combat%20spreadsheet.jpg)
 
-### *Armour & Caps*
+#### *Armour & Caps*
 
 Armour is applied per strike using the snapshot armour at strike time. Snapshot is used to display status or armour during the Combat round, as in the next battle round, armour might be reduced.
 
 Caps (Ghost shield/Spectral shield) reduce per strike net damage to 1 (after armour has been applied).
 
-![Armour and Caps 1](/assets/Combat_round_1_Armour_and_Caps.jpg)
+![Armour and Caps 1](/assets/Combat_round_2_Armour_and_Caps.jpg)
 
-![Armour and Caps 2](/assets/Combat_round_2_Armour_and_Caps.jpg)
+![Armour and Caps 2](/assets/Combat_round_2_Armour_and_Caps_2.jpg)
 
-### *Post-Round Effects*
+#### *Post-Round Effects*
 
 To see the list of post-round effects, check 
 ## 4 Special abilities in gameplay
