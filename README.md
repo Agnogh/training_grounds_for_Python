@@ -9,10 +9,11 @@
     - [1.1 Theme & Inspiration](#11-theme--inspiration)
     - [1.2 Design Goal](#12-design-goals)
  - [2 Game rules](#2-game-rules)
-    - [A Battle Round consists of:](#a-battle-round-consists-of)
+    - [A Battle Round content:](#a-battle-round-consists-of)
  - [3 Characters & Gear](#3-characters--gear)
     - [3.1 Heroes](#31-heroes)
     - [3.2 Monsters](#32-monsters)
+    - [3.3 Weapons](#33-weapons)
  - [4 Special abilities in gameplay](#4-special-abilities-in-gameplay)
     - [4.1 Hero's special abilities](#41-heros-special-abilities)
     - [4.2 Monsters' special abilities](#42-monsters-special-abilities)
@@ -25,7 +26,7 @@
     - [Post-Round Effects](#post-round-effects)
     - [Display](#display)
  - [6 Quality](#6-quality)
-    - [6.1 *Testing*](#61-testing)
+    - [6.1 Testing](#61-testing)
     - [6.2 Fixed Bugs (highlights)](#62-fixed-bugs-highlights)
  - [7 Google Sheets Integration](#7-google-sheets-integration)
  - [8 Tech Stack](#8-tech-stack)
@@ -34,12 +35,13 @@
     - [Add buildpacks](#add-buildpacks-order-matters)
     - [Set Config Vars (Settings → Config Vars):](#set-config-vars-settings--config-vars)
     - [Procfile*](#procfile-should-be)
+    - [Deploy](#deploy)
  - [10 Known Limitations / Future Ideas](#10-known-limitations--future-ideas)
  - [11 Special requirements from Code Institute](#11-special-requirements-from-code-institute)
     - [11.1 Reminders](#111-reminders)
     - [11.2 Creating the Heroku app](#112-creating-the-heroku-app)
     - [11.3 Constraints](#113-constraints)
- - [12 Credits & Thanks](#12-credits--thanks12)
+ - [12 Credits & Thanks](#12-credits--thanks)
     - [12.1 Credits](#121-credits)
     - [12.2 Thanks](#122-thanks)
  - [13 Final note](#13-final-note)
@@ -204,7 +206,7 @@ Hero: 1 (or 2 due to special ability) strikes
 
 Monster: 1 strike (currently, there are no monsters with dual strike).
 
-![Regular strike](/assets/Combat%20spreadsheet.jpg)
+![Regular strike](/assets/Combat_round_1_Regular_strike.jpg)
 
 #### *Armour & Caps*
 
@@ -219,7 +221,6 @@ Caps (Ghost shield/Spectral shield) reduce per strike net damage to 1 (after arm
 #### *Post-Round Effects*
 
 To see the list of post-round effects, check 
-## 4 Special abilities in gameplay
 
 ![Post Round](/assets/Combat_round_3_Post_Round.jpg)
 
@@ -345,7 +346,7 @@ SHEET_ID was not used despite folks from Stack advised to do so
 web: node index.js
 
 
-### Deploy
+#### Deploy
 
 Despite I found this on YouTube
 *heroku login*
