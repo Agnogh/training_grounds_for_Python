@@ -15,9 +15,9 @@
     - [3.2 Monsters](#32-monsters)
     - [3.3 Weapons](#33-weapons)
  - [4 Special abilities in gameplay](#4-special-abilities-in-gameplay)
-    - [4.1 Hero's special abilities](#41-heros-special-abilities)
-    - [4.2 Monsters' special abilities](#42-monsters-special-abilities)
-    - [4.3 Weapons special abilities](#43-weapons-special-abilities)
+    - [4.1 Heroes’ special abilities](#41-heroes-special-abilities)
+    - [4.2 Monsters’ special abilities](#42-monsters-special-abilities)
+    - [4.3 Weapons’ special abilities](#43-weapons-special-abilities)
  - [5 How Combat Works (Detail)](#5-how-combat-works-detail)
     - [5.1 Gameplay flow (Flowchart)](#51-gameplay-flow-flowchart)
     - [5.2 Gameplay flow (Description)](#52-gameplay-flow-description)
@@ -116,7 +116,7 @@ Weapons define base damage ranges and sometimes have special rules:
 
 ## 4 Special abilities in gameplay
 
-### 4.1 *Heros special abilities*
+### 4.1 *Heroes’ special abilities*
 Royal Guard     ->      *Veteran warrior* - Starts high HP
 
 Rogue       ->      *Quick hands* ability to attack 2 times per round (extra attack)
