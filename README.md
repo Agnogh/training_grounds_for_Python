@@ -139,7 +139,7 @@ Druid       ->      *Thorns Shield* Every successful attack on the hero re
 
 
 
-### 4.2 *Monsters special abilities*
+### 4.2 *Monsters’ special abilities*
 
 Vampire     ->      *Drain life* Every sucessfull attack regenerates 1HP to monster
 
@@ -153,7 +153,7 @@ Zombie     ->      *Death grip* Does extra 1 damage (ignores hero armour)
 
 
 
-### 4.3 *Weapons special abilities*
+### 4.3 *Weapons’ special abilities*
 
 Dual daggers        ->      *Double stab* Attack 2 times (1-3) + (1-3), but armour defence is applied once
 
