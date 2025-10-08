@@ -5,42 +5,46 @@
 
 
 [Python battle grounds](#python-battle-grounds)
-    [Game Overview](#1-game-overview)
-        [1.1 Theme & Inspiration](#11-theme--inspiration)
-        [1.2 Design Goal](#12-design-goals)
-    [2 Game rules](#2-game-rules)
-    [A Battle Round consists of:](#a-battle-round-consists-of)
-    [3 Characters & Gear](#3-characters--gear)
-        [3.1 Heroes](#31-heroes)
-        [3.2 Monsters](#32-monsters)
-    [4 Special abilities in gameplay](#4-special-abilities-in-gameplay)
-        [4.1 Hero's special abilities](#41-heros-special-abilities)
-        [4.2 Monsters' special abilities](#42-monsters-special-abilities)
-        [4.3 Weapons special abilities](#43-weapons-special-abilities)
-    [5 How Combat Works (Detail)](#5-how-combat-works-detail)
-        [Rolls](#rolls)
-        [Armour & Caps](#armour--caps)
-        [Post-Round Effects](#post-round-effects)
-        [Display](#display)
-    [6 Quality](#6-quality)
-        [6.1 *Testing*](#61-testing)
-        [6.2 Fixed Bugs (highlights)](#62-fixed-bugs-highlights)
-    [7 Google Sheets Integration](#7-google-sheets-integration)
-    [8 Tech Stack](#8-tech-stack)
-    [9 Deployment to Heroku](#9-deployment-to-heroku)
-        [One-time app setup](#one-time-app-setup)
-        [Add buildpacks](#add-buildpacks-order-matters)
-        [Set Config Vars (Settings → Config Vars):](#set-config-vars-settings--config-vars)
-        [Procfile*](#procfile-should-be)
-    [10 Known Limitations / Future Ideas](#10-known-limitations--future-ideas)
-    [11 Special requirements from Code Institute](#11-special-requirements-from-code-institute)
-        [11.1 Reminders](#111-reminders)
-        [11.2 Creating the Heroku app](#112-creating-the-heroku-app)
-        [11.3 Constraints](#113-constraints)
-    [12 Credits & Thanks](#12-credits--thanks12)
-        [12.1 Credits](#121-credits)
-        [12.2 Thanks](#122-thanks)
-    [13 Final note](#13-final-note)
+ - [Game Overview](#1-game-overview)
+    - [1.1 Theme & Inspiration](#11-theme--inspiration)
+    - [1.2 Design Goal](#12-design-goals)
+ - [2 Game rules](#2-game-rules)
+    - [A Battle Round content:](#a-battle-round-consists-of)
+ - [3 Characters & Gear](#3-characters--gear)
+    - [3.1 Heroes](#31-heroes)
+    - [3.2 Monsters](#32-monsters)
+    - [3.3 Weapons](#33-weapons)
+ - [4 Special abilities in gameplay](#4-special-abilities-in-gameplay)
+    - [4.1 Heroes’ special abilities](#41-heroes-special-abilities)
+    - [4.2 Monsters’ special abilities](#42-monsters-special-abilities)
+    - [4.3 Weapons’ special abilities](#43-weapons-special-abilities)
+ - [5 How Combat Works (Detail)](#5-how-combat-works-detail)
+    - [5.1 Gameplay flow (Flowchart)](#51-gameplay-flow-flowchart)
+    - [5.2 Gameplay flow (Description)](#52-gameplay-flow-description)
+    - [Rolls](#rolls)
+    - [Armour & Caps](#armour--caps)
+    - [Post-Round Effects](#post-round-effects)
+    - [Display](#display)
+ - [6 Quality](#6-quality)
+    - [6.1 Testing](#61-testing)
+    - [6.2 Fixed Bugs (highlights)](#62-fixed-bugs-highlights)
+ - [7 Google Sheets Integration](#7-google-sheets-integration)
+ - [8 Tech Stack](#8-tech-stack)
+ - [9 Deployment to Heroku](#9-deployment-to-heroku)
+    - [One-time app setup](#one-time-app-setup)
+    - [Add buildpacks](#add-buildpacks-order-matters)
+    - [Set Config Vars (Settings → Config Vars):](#set-config-vars-settings--config-vars)
+    - [Procfile*](#procfile-should-be)
+    - [Deploy](#deploy)
+ - [10 Known Limitations / Future Ideas](#10-known-limitations--future-ideas)
+ - [11 Special requirements from Code Institute](#11-special-requirements-from-code-institute)
+    - [11.1 Reminders](#111-reminders)
+    - [11.2 Creating the Heroku app](#112-creating-the-heroku-app)
+    - [11.3 Constraints](#113-constraints)
+ - [12 Credits & Thanks](#12-credits--thanks)
+    - [12.1 Credits](#121-credits)
+    - [12.2 Thanks](#122-thanks)
+ - [13 Final note](#13-final-note)
 
 
 
@@ -96,7 +100,7 @@ Each hero has: Armour, HP, and an optional Special ability.
 
 ### 3.2 *Monsters*
 
-Monsters list: *Vampire, Skeleton, Werewolf, Wraight, Zombie*
+Monsters list: *Vampire, Skeleton, Werewolf, Wraith, Zombie*
 
 Each monster has: Armour, HP, Damage Range, and, in some cases, a Special ability.
 
@@ -112,7 +116,7 @@ Weapons define base damage ranges and sometimes have special rules:
 
 ## 4 Special abilities in gameplay
 
-### 4.1 *Heros special abilities*
+### 4.1 *Heroes’ special abilities*
 Royal Guard     ->      *Veteran warrior* - Starts high HP
 
 Rogue       ->      *Quick hands* ability to attack 2 times per round (extra attack)
@@ -135,7 +139,7 @@ Druid       ->      *Thorns Shield* Every successful attack on the hero re
 
 
 
-### 4.2 *Monsters special abilities*
+### 4.2 *Monsters’ special abilities*
 
 Vampire     ->      *Drain life* Every sucessfull attack regenerates 1HP to monster
 
@@ -143,13 +147,13 @@ Skeleton     ->      *Armoured* High armour applied
 
 Werewolf     ->      *Shred armour* Every successful attack reduces hero armour by one.
 
-Wraight     ->     *Ghost shield* Can receive max 1 damage per attack (after armour is bypassed)
+Wraith    ->     *Ghost shield* Can receive max 1 damage per attack (after armour is bypassed)
 
 Zombie     ->      *Death grip* Does extra 1 damage (ignores hero armour)
 
 
 
-### 4.3 *Weapons special abilities*
+### 4.3 *Weapons’ special abilities*
 
 Dual daggers        ->      *Double stab* Attack 2 times (1-3) + (1-3), but armour defence is applied once
 
@@ -165,28 +169,58 @@ Hammer        ->      *Shield breaker* -> Destroys 1 armour after each su
 
 ## 5 How Combat Works (Detail)
 
-### *Rolls*
+Combat (game flow) is described through *"flowchart"* and *phase-by-phase* description
+
+
+### 5.1 Gameplay flow (Flowchart)
+
+```mermaid
+
+flowchart TD
+  A[Start] --> B[Welcome to battle]
+  B --> C[Load data from Google Sheets<br/>Heroes / Weapons / Monsters]
+  C --> D[Show Hero list and stats]
+  D --> E[Choose Hero]
+  E --> F[Show Monster list and stats]
+  F --> G[Choose Monster]
+  G --> H[Show list of weapons and stats]
+  H --> I[Choose a Weapon to equip on your Hero]
+  I --> J{Battle loop}
+  J --> K[Resolve simultaneous round<br/>apply armour & specials]
+  K --> L[Append round to 'Combat' sheet]
+  L --> M{Outcome?}
+  M -->|Double KO| N[Show result: both defeated] --> Z[End]
+  M -->|Monster defeated| O[Show result: hero wins] --> Z
+  M -->|Hero defeated| P[Show result: monster wins] --> Z
+  M -->|Continue the fight| I
+  M -->|Player chooses 'F' to flee| R[Show flee message] --> Z
+
+```
+
+
+### 5.2 Gameplay flow (Description)
+
+#### *Rolls*
 
 Hero: 1 (or 2 due to special ability) strikes
 
 Monster: 1 strike (currently, there are no monsters with dual strike).
 
-![Regular strike](/assets/Combat%20spreadsheet.jpg)
+![Regular strike](/assets/Combat_round_1_Regular_strike.jpg)
 
-### *Armour & Caps*
+#### *Armour & Caps*
 
 Armour is applied per strike using the snapshot armour at strike time. Snapshot is used to display status or armour during the Combat round, as in the next battle round, armour might be reduced.
 
 Caps (Ghost shield/Spectral shield) reduce per strike net damage to 1 (after armour has been applied).
 
-![Armour and Caps 1](/assets/Combat_round_1_Armour_and_Caps.jpg)
+![Armour and Caps 1](/assets/Combat_round_2_Armour_and_Caps.jpg)
 
-![Armour and Caps 2](/assets/Combat_round_2_Armour_and_Caps.jpg)
+![Armour and Caps 2](/assets/Combat_round_2_Armour_and_Caps_2.jpg)
 
-### *Post-Round Effects*
+#### *Post-Round Effects*
 
 To see the list of post-round effects, check 
-## 4 Special abilities in gameplay
 
 ![Post Round](/assets/Combat_round_3_Post_Round.jpg)
 
@@ -254,17 +288,19 @@ The game reads Heroes, Weapons, and Monsters from tabs in a Google Sheet.
 
 All combat rounds are written to a Combat tab with headers:
 
-A: Damage done         (hero raw pre-armour)
-B: Damage inflicted    (hero net → monster after armour/caps)
-C: Damage received     (monster raw to hero)
-D: Damage taken        (monster net → hero after armour/caps)
-E: Hero ability        (text)
-F: Monster ability     (text)
-G: Weapon ability      (text)
-H: Armour Hero         (end of round, after specials)
-I: Armour Monster      (end of round, after specials)
-J: Hero HP             (end of round, after specials)
-K: Monster HP          (end of round, after specials)
+| Col | Header            | Meaning |
+|-----|-------------------|--------|
+| A   | Damage done       | hero raw pre-armour |
+| B   | Damage inflicted  | hero net → monster after armour/caps |
+| C   | Damage received   | monster raw → hero |
+| D   | Damage taken      | monster net → hero after armour/caps |
+| E   | Hero ability      | text |
+| F   | Monster ability   | text |
+| G   | Weapon ability    | text |
+| H   | Armour Hero       | end of round, after specials |
+| I   | Armour Monster    | end of round, after specials |
+| J   | Hero HP           | end of round, after specials |
+| K   | Monster HP        | end of round, after specials |
 
 
 A Round 0 row is logged first with starting HP/Armour.
@@ -310,7 +346,7 @@ SHEET_ID was not used despite folks from Stack advised to do so
 web: node index.js
 
 
-### Deploy
+#### Deploy
 
 Despite I found this on YouTube
 *heroku login*
@@ -372,15 +408,16 @@ I had lots of ideas, but the project is already stretched outside of the time al
 ## 11.1 Reminders
 
 - Your code must be placed in the `run.py` file
+*(check commit 186 where I moved main module from battle_grounds.py to run.py)*
 - Your dependencies must be placed in the `requirements.txt` file
 - Do not edit any of the other files, or your code may not deploy properly
 
 ## 11.2 Creating the Heroku app
 
-Check
-[section "Deployment to Heroku"](#9-deployment-to-heroku)
-Also check
-[section "One-time app setup"](#one-time-app-setup)
+
+[Check section "Deployment to Heroku"](#9-deployment-to-heroku)
+Also ...
+[Check section "One-time app setup"](#one-time-app-setup)
 
 
 ***When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:***
@@ -388,8 +425,7 @@ Also check
 1. `heroku/python`
 2. `heroku/nodejs`
 
-Check
-[section "Add buildpacks"](#add-buildpacks-order-matters)
+[Check section "Add buildpacks"](#add-buildpacks-order-matters)
 
 ***You must then create a _Config Var_ called `PORT`. Set this to `8000`***
 
@@ -397,8 +433,7 @@ Check
 
 ***Connect your GitHub repository and deploy as normal.***
 
-Check
-[section "Deploy"](#9-deployment-to-heroku)
+[Check section "Deploy"](#9-deployment-to-heroku)
 
 
 
@@ -455,7 +490,6 @@ Bless their hearts
 
 ![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
 
-![Alt text for accessibility](path/to/image.png "Optional title")
 
 
 

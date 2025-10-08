@@ -35,3 +35,7 @@ core.python*
 *.py[cod]
 node_modules/
 .github/
+
+# needed to add this as I exposed my key AGAIN while on video call
+# with enginner for AI annotation that was helping me with other stuff
+pythonbattlefield-f6d8b5660e01.json
