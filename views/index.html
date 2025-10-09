@@ -75,7 +75,7 @@
 
         // Handle special keys (HW keyboards also) -> for preveting browser to do default thing
         kb.addEventListener('keydown', (e) => {     // 'listen' to keydown and set it as 'e' -> prevent default key action
-        if (e.key === 'Enter') { sendToPty('\n'); e.preventDefault(); }     // if 'keydown' is identical to 'enter' -> prevent defoult action
+        if (e.key === 'Enter') { sendToPty('\r'); e.preventDefault(); }     // if 'keydown' is identical to 'enter' -> prevent defoult action
         else if (e.key === 'Backspace') { sendToPty('\x7f'); e.preventDefault(); }  // if keydown is identical to backspace -> prevent default action
         else if (e.key === 'Tab') { sendToPty('\t'); e.preventDefault(); }      // if keydown is identical to 'tab' -> prevent default action
         });
