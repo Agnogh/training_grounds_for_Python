@@ -1,27 +1,86 @@
 <body>
     <button onclick="window.location.reload()">Run Program</button>
-    <div id="terminal"></div>
+    <div id="terminal"></div>  
 
     <script>
-        var term = new Terminal({
-            cols: 80,
-            rows: 24
-        });
-        term.open(document.getElementById('terminal'));
-        term.writeln('Running startup command: python3 run.py');
-        term.writeln('');
+    var term = new Terminal({ cols: 80, rows: 24 });  // lismitation to the 'display' size
+    term.open(document.getElementById('terminal'));  // box for display
+    term.writeln('Running startup command: python3 run.py');  // text that shows up on each start
+    term.writeln('');  // blank text for spacing
 
-        var ws = new WebSocket(location.protocol.replace('http', 'ws') + '//' + location.hostname + (location.port ? (
-            ':' + location.port) : '') + '/');
+    // Create WS and expose it globally so sendToPty() can use it
+    var ws = new WebSocket(
+        location.protocol.replace('http', 'ws') + '//' +  // turning http to ws (secure)
+        location.hostname + (location.port ? (':' + location.port) : '') + '/'  // thhis is to use same host/port as page
+    );
+    window.ws = ws; // stores pipe so it can be reused
 
-        ws.onopen = function () {
-            new attach.attach(term, ws);
-        };
+    ws.onopen = function () {       // handler xterm to the socket
+        new attach.attach(term, ws);  // streams WS <-> xterm
+    };
 
-        ws.onerror = function (e) {
-            console.log(e);
-        };
-        // Set focus in the terminal
+    ws.onerror = function (e) {     // this is if pipe has problem
+        console.log(e);     // print that problem - visibilty
+    };
+
+    // For Desktop/Android only: focus xterm's textarea (iOS use hidden input)
+    var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||     // variable for iOS vers
+                (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+    if (!isiOS) {       // if it is not iOS Vers
         document.getElementsByClassName("xterm-helper-textarea")[0].focus();
+    }       // it will work normally
     </script>
+
+    <input id="mobilekb"
+       autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+       inputmode="text"
+       style="position:fixed;left:-9999px;opacity:0;width:1px;height:1px;border:0;padding:0;" />
+
+    <script>
+    // Forward data to existing WebSocket
+    function sendToPty(s) {
+        if (window.ws && ws.readyState === WebSocket.OPEN) {  // if pipe is opened
+        ws.send(s);  // carry 's' to server
+        }
+    }
+
+    (function () {
+        // Detect iOS/iPadOS
+        const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||       // only run if it is iOS vers
+                    (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+
+        if (!isiOS) return;
+
+        const kb = document.getElementById('mobilekb');  // grab input (what user types9)
+        const terminalEl = document.getElementById('terminal');  // grab terminal box (where it is typed)
+
+        function focusKb() {
+        if (!kb) return;
+        kb.focus({ preventScroll: true });
+        const pos = kb.value.length;
+        try { kb.setSelectionRange(pos, pos); } catch {}
+        }
+
+        // Keep the iOS keyboard up when user taps/clicks the terminal
+        window.addEventListener('load', focusKb);       // page load
+        terminalEl.addEventListener('click', focusKb, { passive: true });       // if there is a click run 'focusKb'
+        terminalEl.addEventListener('touchstart', focusKb, { passive: true });      // if 'touchstart' 
+
+        // Forward typed text from the hidden input
+        kb.addEventListener('input', () => {        // wait for input 
+        if (!kb.value) return;      // if it is not kb.value return
+        sendToPty(kb.value);  // send char to server
+        kb.value = '';      // set kb value to empty string (clear input)
+        });
+
+        // Handle special keys (HW keyboards also) -> for preveting browser to do default thing
+        kb.addEventListener('keydown', (e) => {     // 'listen' to keydown and set it as 'e' -> prevent default key action
+        if (e.key === 'Enter') { sendToPty('\n'); e.preventDefault(); }     // if 'keydown' is identical to 'enter' -> prevent defoult action
+        else if (e.key === 'Backspace') { sendToPty('\x7f'); e.preventDefault(); }  // if keydown is identical to backspace -> prevent default action
+        else if (e.key === 'Tab') { sendToPty('\t'); e.preventDefault(); }      // if keydown is identical to 'tab' -> prevent default action
+        });
+    })();
+
+    </script>
+
 </body>
