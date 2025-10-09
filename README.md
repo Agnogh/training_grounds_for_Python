@@ -482,7 +482,7 @@ I especially had so many setbacks with Google Spreadsheet as I have pushed multi
 
 Another pretty insane setback was deploying to Heroku. Error on my part that I didn't read how I should be using the template from Code Institute, but took me a full 2 days to figure out what files I needed to have in order to push/connect the damn thing with GitHub.
 
-In both cases, there were some nice folks on Stack Overflow, like Alvaro, Mika, Asia, Hilla, Jeheeya, and Sophie, who helped me with ideas, suggestions and command lines to try out.
+In both cases, there were some nice folks on Stack Overflow, like Alvaro, Mika, Asia, Hilla, Jeheeya, Pavlov and Sophie, who helped me with ideas, suggestions and command lines to try out.
 
 Bless their hearts
 
